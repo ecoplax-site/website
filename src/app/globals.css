@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@theme inline {
+  /*
+   * Tipografía de marca — ver CLAUDE.md > "Identidad de marca".
+   * PP Mori (tipografía oficial) no tiene licencia web adquirida; estos son
+   * los sustitutos aprobados de Google Fonts, cargados con next/font en layout.tsx.
+   */
+  --font-heading: var(--font-dm-sans); /* Titulares → DM Sans. Utilidad: font-heading */
+  --font-body: var(--font-figtree); /* Texto corrido → Figtree. Utilidad: font-body */
+}
+
+/*
+ * ============================================================================
+ * MODELO DE COLOR EN DOS CAPAS
+ * ============================================================================
+ * Capa 1 — tokens de marca (valores): los únicos que llevan un #hexadecimal.
+ *   Fuente única de verdad: CLAUDE.md > "Identidad de marca". No agregues,
+ *   quites ni alteres estos valores sin actualizar antes CLAUDE.md.
+ *
+ * Capa 2 — tokens semánticos (uso): referencian a los de marca vía var(),
+ *   nunca repiten un #hexadecimal. Describen PARA QUÉ se usa un color
+ *   (superficie, texto primario, etc.), no de qué color de marca viene.
+ *
+ * Regla para componentes: usar SIEMPRE tokens semánticos (surface-*, ink*).
+ * No uses los nombres de color de marca directos (cal-poly-pomona-green,
+ * liver-chestnut, pastel-gray, dark-vanilla, eggshell, canvas, mist) dentro
+ * de componentes o páginas — esos son solo la capa de valores.
+ * ============================================================================
+ */
+
+/*
+ * Capa 1 — tokens de marca (valores).
+ *
+ * Los cinco primeros son la paleta oficial del manual de marca.
+ * canvas y mist son dos neutros cálidos añadidos como extensión del manual
+ * aprobada por SCNDAL: un casi blanco tibio y un gris muy tenue, elegidos
+ * para armonizar con la temperatura térrea de la paleta oficial.
+ *
+ * Reglas de uso de color (objetivo WCAG 2.1 AA — 4.5:1 texto normal, 3:1 texto grande):
+ *   - Válidos para TEXTO: únicamente cal-poly-pomona-green y liver-chestnut.
+ *   - Solo FONDO (nunca texto): pastel-gray, dark-vanilla, eggshell, canvas y mist.
+ *   - Prohibido: texto blanco sobre pastel-gray, dark-vanilla o eggshell (contraste ~1.5:1, ilegible).
+ *   - Prohibido: texto liver-chestnut sobre fondo dark-vanilla (mide 4.9:1, sin margen frente al mínimo AA).
+ *     Sobre dark-vanilla, usar únicamente cal-poly-pomona-green como color de texto.
+ */
+@theme {
+  --color-cal-poly-pomona-green: #234b2c;
+  --color-liver-chestnut: #5a453a;
+  --color-pastel-gray: #cad6c1;
+  --color-dark-vanilla: #cdbda2;
+  --color-eggshell: #edeedb;
+  --color-canvas: #fbfbf9;
+  --color-mist: #f4f4f0;
+}
+
+/*
+ * Capa 2 — tokens semánticos (uso). Esto es lo que deben usar los componentes.
+ *
+ * Superficies, de más neutra a más intensa:
+ *   surface-base   → canvas               fondo por defecto
+ *   surface-raised → mist                 tarjetas / paneles elevados
+ *   surface-soft    → eggshell            secciones suaves de marca
+ *   surface-muted   → pastel-gray         bloques secundarios
+ *   surface-warm    → dark-vanilla        acentos cálidos
+ *   surface-strong  → cal-poly-pomona-green  ancla de máximo contraste (una por pantalla)
+ *   surface-accent  → liver-chestnut      tarjeta de acento en color sólido, sin foto,
+ *                                         para romper ritmo entre secciones (usar con moderación)
+ *
+ * Texto:
+ *   ink        → cal-poly-pomona-green   texto principal. Utilidad: text-ink
+ *   ink-soft   → liver-chestnut          texto secundario / de apoyo. Utilidad: text-ink-soft
+ *   ink-inverse → canvas                 texto sobre fondos oscuros. Utilidad: text-ink-inverse
+ *
+ * Combinaciones prohibidas:
+ *   - ink-soft NO debe usarse sobre surface-warm (liver-chestnut sobre
+ *     dark-vanilla mide 4.9:1: pasa AA pero sin margen; ver capa 1).
+ *   - ink-inverse es el ÚNICO color de texto válido sobre surface-strong y
+ *     sobre surface-accent (las dos únicas superficies oscuras/saturadas;
+ *     canvas mide ~8.6:1 sobre liver-chestnut). Sobre el resto de superficies,
+ *     todas claras, ink-inverse no tiene contraste suficiente.
+ *   - ink e ink-soft no deben usarse como texto sobre surface-accent: al ser
+ *     ambos oscuros sobre un fondo oscuro, el contraste es prácticamente nulo.
+ */
+@theme {
+  --color-surface-base: var(--color-canvas);
+  --color-surface-raised: var(--color-mist);
+  --color-surface-soft: var(--color-eggshell);
+  --color-surface-muted: var(--color-pastel-gray);
+  --color-surface-warm: var(--color-dark-vanilla);
+  --color-surface-strong: var(--color-cal-poly-pomona-green);
+  --color-surface-accent: var(--color-liver-chestnut);
+
+  --color-ink: var(--color-cal-poly-pomona-green);
+  --color-ink-soft: var(--color-liver-chestnut);
+  --color-ink-inverse: var(--color-canvas);
+}
