@@ -5,8 +5,18 @@
 export type HeroContent = {
   /** Etiqueta pequeña sobre el titular. */
   eyebrow: string;
-  /** Titular principal — es el único <h1> de la página. */
-  headline: string;
+  /**
+   * Titular principal — es el único <h1> de la página.
+   *
+   * Una entrada por línea: el salto entre ellas se fuerza en escritorio (desde
+   * xl, que es donde la primera línea cabe entera sin reducir el cuerpo de la
+   * letra). Por debajo de ese ancho las líneas se unen con un espacio y el
+   * texto fluye solo en las que hagan falta.
+   *
+   * Para cambiar dónde corta el titular, mueve las palabras entre las dos
+   * líneas de la lista. No hace falta tocar el componente.
+   */
+  headlineLines: string[];
   subtitle: string;
   /** Etiqueta del botón de cotización (sin acción todavía, ver Hero.tsx). */
   ctaLabel: string;
@@ -19,7 +29,7 @@ export type HeroContent = {
 
 export const heroContent: HeroContent = {
   eyebrow: "Una marca de Cajaplax",
-  headline: "El envase que ya conoces, con otra huella",
+  headlineLines: ["El envase que ya conoces,", "con otra huella"],
   subtitle:
     "Resinas PCR, RPET y materiales de menor impacto, fabricados en Apan con el respaldo de más de 50 años de Cajaplax.",
   ctaLabel: "Solicitar cotización",

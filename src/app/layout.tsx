@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { DM_Sans, Figtree } from "next/font/google";
+import ContactModalProvider from "@/components/ContactModal";
 import Footer from "@/components/Footer";
+import SmoothScroll from "@/components/SmoothScroll";
 import { siteMetadata } from "@/content/site";
 import "./globals.css";
 
@@ -27,8 +29,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${dmSans.variable} ${figtree.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-surface-base">
-        <div className="flex-1">{children}</div>
-        <Footer />
+        {/* Scroll suave de toda la página. No pinta nada. */}
+        <SmoothScroll />
+        {/*
+          Un único modal de contacto para toda la página. Vive aquí y no en el
+          Hero porque el CTA del footer también lo abre, y el footer se monta
+          fuera del árbol del hero.
+        */}
+        <ContactModalProvider>
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </ContactModalProvider>
       </body>
     </html>
   );

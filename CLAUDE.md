@@ -72,19 +72,28 @@ Reglas de contenedor:
 - El fondo de la página es surface-base. Es el aire entre tarjetas, no un lienzo con contenido encima.
 - Toda tarjeta de sección lleva margen lateral respecto al viewport. Ninguna tarjeta toca el borde de la ventana.
 - Radio de esquina de tarjetas de sección: 24px. Tarjetas anidadas dentro de una sección: 16px. Controles y botones: 12px.
+- Excepción aprobada al radio de controles: los elementos con forma de pastilla usan radio completo. Aplica al selector de pilares y a las etiquetas de resina de Productos. El resto de controles —botones, campos de formulario— mantiene los 12px. No extiendas el radio completo a otros controles sin aprobación.
 - Las tarjetas se separan entre sí por espacio vertical, no por líneas divisorias.
 
 Jerarquía cromática:
 
-- Por defecto una tarjeta es surface-raised o surface-soft, es decir, de tono muy cercano al fondo. El contraste con el fondo es sutil, no marcado.
+Una tarjeta de sección admite cuatro superficies. Son las que expone la prop `surface` del componente Section, y no hay más: cualquier otra combinación es un error.
+
+- surface-raised (Mist). Por defecto. Tono muy cercano al fondo de página: el contraste es sutil, no marcado.
+- surface-soft (Eggshell). Alternativa al anterior, un punto más cálida. Sirve para alternar con raised y dar ritmo entre secciones seguidas sin subir la intensidad.
+- surface-muted (Pastel Gray #cad6c1). Un escalón más marcada que las dos anteriores. Es la superficie para secciones que contienen controles en verde de marca: sobre surface-strong esos controles desaparecerían, porque quedarían verde sobre verde. También separa mejor las tarjetas hijas claras que raised o soft. Ambos colores de texto cumplen sobre ella: ink mide 6.6:1 e ink-soft 5.9:1.
+- surface-strong (Cal Poly Pomona Green). Ancla de máximo contraste. Como máximo una por pantalla: es lo que da jerarquía, y si todo destaca, nada destaca. Sobre ella, ink-inverse es el único color de texto válido.
+
+Reglas transversales:
+
 - El borde es opcional y siempre tenue. Nunca bordes gruesos ni de color saturado.
-- En cada pantalla puede haber como máximo una tarjeta ancla en surface-strong, el verde de marca. Es lo que da jerarquía. Si todo destaca, nada destaca.
 - Las tarjetas de acento en color sólido sin fotografía sirven para romper el ritmo entre secciones con imagen. Úsalas con moderación.
+- Antes de elegir superficie para una sección nueva, mira la anterior y la siguiente: dos secciones seguidas no deben repetir tono.
 
 Anidamiento:
 
 - Una tarjeta de sección puede contener tarjetas hijas. No anides más de dos niveles.
-- Una tarjeta hija nunca repite el mismo tono que su contenedor.
+- Una tarjeta hija nunca repite el mismo tono que su contenedor. En la práctica: hijas claras sobre muted o strong; hijas soft o muted sobre raised.
 
 Efecto glass:
 

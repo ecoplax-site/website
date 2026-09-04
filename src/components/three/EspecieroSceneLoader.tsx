@@ -33,14 +33,6 @@ const FINE_POINTER_QUERY = "(hover: hover) and (pointer: fine)";
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
-/*
-  Padding lateral y superior de la sección del hero, en rem. La capa se alinea
-  con la tarjeta desde fuera de ella, así que necesita repetir ese valor.
-  Es el de `sm:` en adelante, el único que aplica: por debajo de 1024px la
-  escena no se monta.
-*/
-const SECTION_PADDING_REM = 1.5;
-
 export default function EspecieroSceneLoader() {
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
   const hasFinePointer = useMediaQuery(FINE_POINTER_QUERY);
@@ -62,9 +54,14 @@ export default function EspecieroSceneLoader() {
 
   return (
     /*
-      Capa de la escena. Va FUERA de la tarjeta del hero y alineada con ella
-      desde la sección, para poder sobresalir por abajo sin desactivar el
-      overflow-hidden de la tarjeta.
+      Capa de la escena. Va FUERA de la tarjeta del hero, para poder sobresalir
+      por abajo sin desactivar su overflow-hidden, pero dentro de la caja que
+      Hero envuelve alrededor de la tarjeta.
+
+      De ahí que baste con inset-x-0 y top-0: esa caja YA es la tarjeta, así que
+      la capa se alinea sola y este archivo no necesita conocer el padding de la
+      sección. El alto es un porcentaje del de la tarjeta, que es justo como
+      está definido HERO_SCENE_HEIGHT_RATIO.
 
       z-[5] la sitúa por encima del fondo de la tarjeta (que no lleva z-index) y
       por debajo del contenido del hero, que va en z-10.
@@ -79,15 +76,8 @@ export default function EspecieroSceneLoader() {
     */
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute z-[5] overflow-hidden rounded-t-3xl"
-      style={{
-        top: `${SECTION_PADDING_REM}rem`,
-        left: `${SECTION_PADDING_REM}rem`,
-        right: `${SECTION_PADDING_REM}rem`,
-        height: `calc(${HERO_SCENE_HEIGHT_RATIO * 100}% - ${
-          HERO_SCENE_HEIGHT_RATIO * SECTION_PADDING_REM * 2
-        }rem)`,
-      }}
+      className="pointer-events-none absolute inset-x-0 top-0 z-[5] overflow-hidden rounded-t-3xl"
+      style={{ height: `${HERO_SCENE_HEIGHT_RATIO * 100}%` }}
     >
       {/*
         Área sensible al puntero: cubre exactamente la tarjeta, ni un píxel del
