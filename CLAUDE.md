@@ -5,7 +5,9 @@ Sitio corporativo de Ecoplax, marca de envases plásticos sustentables de Cajapl
 ## Stack
 
 - Next.js 16.3.1, App Router, TypeScript, carpeta src/
-- Tailwind CSS
+- Tailwind CSS v4 con capa de tokens semánticos declarada en @theme. No hay archivo de configuración JS.
+- Escena 3D: three, @react-three/fiber y @react-three/drei. Todas las versiones van pinneadas exactas, sin caret ni tilde. No actualices ni instales con rangos.
+- Modelos 3D en formato GLB, generados fuera del repo. No los regeneres ni los edites.
 - Despliegue en Vercel, repositorio github.com/ecoplax-site/website
 - Sin CMS: el contenido vive en el repo como archivos de datos tipados
 - Resend para el envío de formularios (se conecta al final)
@@ -14,6 +16,7 @@ Next.js 16 es una versión reciente. Antes de escribir código que use APIs del 
 
 ## Reglas de trabajo
 
+- Roles del proyecto: la dirección creativa, de diseño, de UX y de contenido corresponde a la agencia. Tu rol es la ejecución técnica. Sobre criterio visual, jerarquía, copy, marca o negocio puedes hacer observaciones y sugerencias, nunca decidir ni aplicar el cambio por tu cuenta.
 - Nunca ejecutes git commit ni git push. El historial lo controla Alejandro manualmente.
 - Ante cualquier decisión de marca, contenido o negocio: detente y pregunta. No elijas por tu cuenta.
 - No inventes datos, cifras, certificaciones, testimonios ni información regulatoria. Si falta un dato, márcalo como PENDIENTE y avísalo.
@@ -31,7 +34,7 @@ Los archivos de contenido deben ser editables por alguien no técnico desde la i
 
 ## Identidad de marca
 
-Paleta oficial (única fuente válida, no usar otros valores):
+Paleta de marca (brandbook, sección 6.1):
 
 - Cal Poly Pomona Green #234b2c
 - Liver Chestnut #5a453a
@@ -39,7 +42,18 @@ Paleta oficial (única fuente válida, no usar otros valores):
 - Dark Vanilla #cdbda2
 - Eggshell #edeedb
 
+El brandbook muestra en otra página los valores #ab8963 y #305137. Son incorrectos: la sección 6.1 es la única fuente válida.
+
+Neutros de sistema, aprobados por la agencia y ajenos al brandbook:
+
+- Canvas #fbfbf9 (fondo de página, surface-base)
+- Mist #f4f4f0 (surface-raised)
+
+Estos dos neutros son parte del sistema y no se sustituyen por colores del brandbook. Fuera de estos siete valores no se introduce ningún color nuevo sin aprobación.
+
 Regla de uso: #234b2c y #5a453a son los únicos colores válidos para texto. #cad6c1, #cdbda2 y #edeedb son exclusivamente colores de fondo. Nunca uses texto blanco sobre los tres claros: el contraste queda en 1.5:1 y es ilegible.
+
+Excepción única: sobre surface-strong (Cal Poly Pomona Green) el color de texto válido es ink-inverse, cuyo valor es Eggshell #edeedb. Ningún otro color de texto es admisible sobre esa superficie, y no se usa blanco puro en ningún caso.
 
 Sobre fondo Dark Vanilla #cdbda2 usa únicamente Cal Poly Pomona Green #234b2c. La combinación de Liver Chestnut #5a453a sobre #cdbda2 queda prohibida: mide 4.9:1 y no tiene margen frente al mínimo AA.
 
@@ -48,7 +62,13 @@ Tipografía: el manual de marca especifica PP Mori, tipografía comercial sin li
 - Titulares: DM Sans
 - Texto corrido: Figtree
 
-Logotipo: archivos SVG proporcionados por el cliente. Tamaño mínimo en web: 77 px de alto para el isotipo, 360 px de ancho para el imagotipo. Nunca deformar, rotar, alterar proporciones, eliminar elementos ni agregar elementos al imagotipo.
+Logotipo: archivos SVG proporcionados por el cliente, en public/images/brand.
+
+Los tamaños mínimos del brandbook —77 px de alto para el isotipo, 360 px de ancho para el imagotipo— no aplican al header ni al footer del sitio. Esos dos usos van al tamaño que pida la composición: en el header, el alto de la barra; en el footer, el ancho de su columna. Decisión tomada con la agencia.
+
+El SVG se pinta inline y su color se resuelve con currentColor, así que no hay variantes de color que mantener: el mismo archivo va en Cal Poly Pomona Green sobre fondo claro y en Eggshell sobre la tarjeta verde.
+
+Nunca deformar, rotar, alterar proporciones, eliminar elementos ni agregar elementos al imagotipo. Escalar siempre por una sola dimensión y dejar que el navegador calcule la otra.
 
 Tagline: "Cambiamos la forma, no el compromiso."
 
@@ -58,10 +78,34 @@ Objetivo WCAG 2.1 nivel AA. Todo texto debe cumplir contraste mínimo 4.5:1 (3:1
 
 ## Datos de la empresa
 
-- Oficinas: Bajío 319, Roma Sur, Cuauhtémoc, CDMX. Tel 5552644545
-- Planta: Apan, Hidalgo. Tel 7489120555
-- Certificaciones: BRCGS Packaging Materials, SMETA, ESR
-- Cajaplax fue fundada en 1975. Nunca escribas el número de años como valor fijo: calcúlalo desde 1975 o usa "más de 50 años".
+Las direcciones, teléfonos, certificaciones, cifras, capacidades productivas y cualquier dato verificable viven exclusivamente en los archivos de contenido. Este archivo no es fuente de datos.
+
+Si un dato no está en los archivos de contenido, no lo escribas: márcalo como PENDIENTE y detente.
+
+## Integridad de contenido
+
+Estas reglas aplican a todo texto visible del sitio y no admiten excepción.
+
+- No escribas cifras de emisiones, huella de carbono ni CO₂ bajo ninguna forma. La línea base GEI está en construcción.
+- No atribuyas ninguna afirmación absoluta a un material: nada es "100% reciclable", "totalmente biodegradable" ni equivalente.
+- No describas EcoPure® con ningún verbo ambiental (degradar, descomponer, reducir emisiones). Su descripción queda pendiente de datos técnicos del cliente.
+- No inventes nombres de producto, SKUs, capacidades ni especificaciones técnicas.
+- El informe de sostenibilidad pertenece a CAJAPLAX, S.A. de C.V. Ecoplax es una línea de producto de esa empresa. No atribuyas a Ecoplax datos, certificaciones ni resultados corporativos de Cajaplax.
+- Cajaplax fue fundada en 1975. Nunca escribas el número de años como valor fijo: usa "más de cinco décadas".
+
+## Decisiones cerradas
+
+Estas decisiones ya se tomaron y evaluaron. No las reviertas ni las "corrijas" al encontrarlas.
+
+- El header no comparte el sistema de padding del hero. Se desacoplaron a propósito. No los vuelvas a unificar.
+- Las secciones Capacidad, Planta, Materiales, Contacto, Sectores y Clientes se eliminaron de la home de forma deliberada. No las reintroduzcas.
+- El proyecto usa Tailwind v4 con tokens semánticos en @theme. No introduzcas un archivo de configuración JS ni clases de utilidad con valores arbitrarios.
+
+## Verificación
+
+- Ejecuta la tarea una vez y reporta. No hagas ciclos repetidos de validación por tu cuenta.
+- La revisión visual la hace la agencia. No abras el navegador para juzgar cómo se ve algo.
+- Para diagnosticar un fallo reportado, sí levanta el servidor y reprodúcelo. No deduzcas la causa leyendo el código.
 
 ## Sistema visual: tarjetas
 

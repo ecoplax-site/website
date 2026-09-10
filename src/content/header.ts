@@ -16,8 +16,11 @@ import { footerContent, type FooterNavLink } from "@/content/footer";
 export type HeaderNavLink = FooterNavLink;
 
 export type HeaderContent = {
-  /** Texto placeholder del logo, mientras no exista el SVG oficial del cliente. */
-  logoText: string;
+  /**
+   * Nombre accesible del enlace del logotipo. Describe A DÓNDE lleva, que es lo
+   * que necesita quien no ve la marca; no repite la palabra "logotipo".
+   */
+  homeLinkLabel: string;
   /** Etiqueta del botón de cotización. Abre el modal de contacto. */
   ctaLabel: string;
   /** Nombre accesible del <nav>, para lectores de pantalla. */
@@ -38,7 +41,7 @@ export type HeaderContent = {
 };
 
 export const headerContent: HeaderContent = {
-  logoText: "ecoplax",
+  homeLinkLabel: "Ecoplax, ir al inicio",
   ctaLabel: "Solicitar cotización",
   navLabel: "Navegación principal",
   navLinks: footerContent.nav.links,

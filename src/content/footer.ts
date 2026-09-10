@@ -34,7 +34,8 @@ export type FooterContent = {
   };
   brand: {
     /** Texto placeholder del logo, mientras no exista el SVG oficial del cliente. */
-    logoText: string;
+    /** Nombre accesible del imagotipo del footer. */
+    logoAlt: string;
     /** Descriptor de marca. Es el tagline oficial: no cambiarlo sin aprobación. */
     descriptor: string;
   };
@@ -77,17 +78,26 @@ export const footerContent: FooterContent = {
     buttonLabel: "Solicitar cotización",
   },
   brand: {
-    logoText: "ecoplax",
+    logoAlt: "Ecoplax",
     descriptor: "Cambiamos la forma, no el compromiso.",
   },
   nav: {
     heading: "Navegación",
     label: "Secciones del sitio",
-    // Los href corresponden a los id reales de cada <Section> de la home.
+    /*
+      Los href corresponden a los id reales de cada <Section> de la home, y van
+      con la barra inicial a propósito: "/#origen" y no "#origen".
+
+      Header y footer se pintan en TODAS las rutas, no solo en la home. Un
+      "#origen" a secas, desde la página de un producto, buscaría un ancla que
+      allí no existe y no haría nada. Con la ruta delante, navega a la home y
+      baja a la sección. Dentro de la propia home el navegador lo resuelve como
+      salto de ancla del mismo documento, sin recargar.
+    */
     links: [
-      { label: "Origen", href: "#origen" },
-      { label: "Pilares", href: "#pilares" },
-      { label: "Productos", href: "#productos" },
+      { label: "Origen", href: "/#origen" },
+      { label: "Pilares", href: "/#pilares" },
+      { label: "Materiales", href: "/#materiales" },
     ],
   },
   contact: {

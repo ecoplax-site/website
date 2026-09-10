@@ -80,7 +80,7 @@ const EMPTY_VALUES: Record<FieldName, string> = {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const CONTROL_STYLES =
-  "w-full rounded-xl bg-surface-base px-4 py-3 font-body text-base text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
+  "w-full rounded-xl bg-surface-base px-4 py-3 font-body text-base text-ink";
 
 /*
   Borde del control. ink-soft al 70% sobre la superficie del panel mide 3.8:1,
@@ -92,9 +92,9 @@ const BORDER_STYLES = "border border-ink-soft/70";
 const ERROR_BORDER_STYLES = "border-2 border-ink";
 
 const PRIMARY_BUTTON_STYLES =
-  "appearance-none rounded-xl bg-surface-strong px-6 py-3 font-body text-sm font-medium text-ink-inverse focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
+  "appearance-none rounded-xl bg-surface-strong px-6 py-3 font-body text-sm font-medium text-ink-inverse";
 const SECONDARY_BUTTON_STYLES =
-  "appearance-none rounded-xl bg-surface-soft px-6 py-3 font-body text-sm font-medium text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
+  "appearance-none rounded-xl bg-surface-soft px-6 py-3 font-body text-sm font-medium text-ink";
 
 /**
  * Envío del formulario.

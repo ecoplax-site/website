@@ -98,9 +98,46 @@ function ModalPanel({
   padded = true,
   children,
 }: Omit<ModalProps, "open">) {
+  const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
   const prefersReducedMotion = useMediaQuery(REDUCED_MOTION_QUERY);
+
+  /*
+    Aislamiento del fondo. Mientras el modal está abierto, todo lo que cuelga
+    de <body> salvo el propio modal queda inert: deja de recibir foco y puntero
+    y sale del árbol de accesibilidad. Por eso no hace falta aria-hidden
+    aparte, y por eso conviene no ponerlo: dos mecanismos para lo mismo se
+    desincronizan.
+
+    Funciona porque el modal se pinta con un portal en <body> y no dentro del
+    árbol de la página: es hermano del contenido, no descendiente, así que se
+    puede inertizar todo lo demás sin inertizarlo a él.
+
+    Se recorre <body> en vivo y se guarda el valor anterior de cada hijo en vez
+    de asumir que era false: si un día hay dos modales encadenados, el de
+    dentro inertiza al de fuera y al cerrarse lo devuelve como estaba.
+
+    Va DECLARADO ANTES que el efecto de foco a propósito. React limpia los
+    efectos en el orden en que se declaran, así que al cerrar el fondo deja de
+    ser inerte antes de que se devuelva el foco al botón que abrió el modal.
+    Al revés, ese botón todavía estaría dentro del subárbol inerte y el .focus()
+    no haría nada.
+  */
+  useEffect(() => {
+    const root = rootRef.current;
+    const previous = new Map<HTMLElement, boolean>();
+
+    for (const child of Array.from(document.body.children)) {
+      if (!(child instanceof HTMLElement) || child === root) continue;
+      previous.set(child, child.inert);
+      child.inert = true;
+    }
+
+    return () => {
+      for (const [child, wasInert] of previous) child.inert = wasInert;
+    };
+  }, []);
 
   /*
     Foco: se guarda el elemento que lo tenía —el botón que abrió el modal— y se
@@ -206,6 +243,7 @@ function ModalPanel({
       click se contabiliza en el velo y el modal se cerraría solo.
     */
     <div
+      ref={rootRef}
       className="fixed inset-0 z-50 flex items-center justify-center bg-surface-strong/60 p-4 sm:p-6"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
@@ -256,7 +294,7 @@ function CloseButton({
       type="button"
       onClick={onClose}
       aria-label={closeLabel}
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-ink"
     >
       <svg
         aria-hidden="true"

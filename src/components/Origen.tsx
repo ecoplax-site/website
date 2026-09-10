@@ -35,7 +35,7 @@ const CARD_STYLES = "bg-surface-soft text-ink";
 
 export default function Origen() {
   return (
-    <Section id="origen" surface="raised">
+    <Section id="origen" surface="soft">
       <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-x-0">
         <div className="flex flex-col gap-10 md:col-span-5 md:col-start-1 md:justify-between">
           {/* Bloque superior: etiqueta y titular, pegados entre sí. */}

@@ -95,3 +95,88 @@
   --color-ink-soft: var(--color-liver-chestnut);
   --color-ink-inverse: var(--color-canvas);
 }
+
+/*
+ * Capa base — cursor de los controles.
+ *
+ * Preflight de Tailwind v3 traía `button, [role="button"] { cursor: pointer }`.
+ * v4 la eliminó a propósito para alinearse con la hoja de estilos del
+ * navegador, donde <button> usa `cursor: default`. Los <a href> no se ven
+ * afectados: el puntero de mano se lo da el navegador.
+ *
+ * Se restituye aquí, en la capa base, para que cualquier utilidad `cursor-*`
+ * aplicada en un componente siga teniendo prioridad sobre esta regla.
+ *
+ * `:not(:disabled)` deja fuera el estado deshabilitado: un control que no
+ * responde no debe anunciarse como pulsable.
+ */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/*
+ * Capa base — indicador de foco de teclado.
+ *
+ * Definición única para todo el sitio: ningún componente vuelve a declarar el
+ * anillo. `:focus-visible` y no `:focus`, para que no aparezca al hacer clic
+ * con el ratón.
+ *
+ * Color por defecto: ink. Contraste del anillo contra las superficies del
+ * sistema —mínimo exigido 3:1—:
+ *   surface-base   (canvas #fbfbf9)      10.2:1
+ *   surface-raised (mist #f4f4f0)         9.9:1
+ *   surface-soft   (eggshell #edeedb)     9.5:1
+ *   surface-muted  (pastel-gray #cad6c1)  6.6:1
+ *   surface-strong (green #234b2c)        1:1  → NO vale: verde sobre verde.
+ *
+ * Sobre surface-strong, y solo ahí, el control añade
+ * `focus-visible:outline-ink-inverse`: canvas sobre green mide 9.6:1. Esa
+ * utilidad solo cambia el color; el grosor y el offset los sigue poniendo esta
+ * regla, porque la capa de utilidades gana a la capa base.
+ *
+ * outline-offset separa el anillo del control: el hueco deja ver lo que hay
+ * DETRÁS del control, así que el color se elige contra ese fondo, no contra el
+ * relleno del propio control.
+ */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+}
+
+/*
+ * Utilidad — anillo de foco de dos tonos, para controles que se apoyan sobre
+ * fotografía.
+ *
+ * Sobre una superficie del sistema el color del anillo se puede elegir contra
+ * un valor conocido. Sobre una foto no: el píxel que queda bajo el hueco del
+ * outline-offset cambia de una zona a otra y con cada recorte responsive, así
+ * que ningún color único garantiza el 3:1.
+ *
+ * La solución es no depender del fondo: anillo oscuro en ink más un halo claro
+ * en canvas que rellena el hueco. Si la foto es oscura, se ve el halo contra
+ * ella; si es clara, se ve el anillo contra el halo. Siempre hay un borde de
+ * separación, sea cual sea el píxel de debajo.
+ *
+ * El halo va como box-shadow con 2px de extensión y sin desplazamiento: ocupa
+ * exactamente la banda que deja el outline-offset de la capa base, por fuera
+ * de la caja y por dentro del anillo, sin tocar ni el grosor ni el offset.
+ * Sigue el border-radius del control, así que sirve igual en las píldoras y en
+ * los botones de radio 12px.
+ *
+ * canvas y no ink-inverse: ink-inverse es un token de TEXTO, y esto no es
+ * texto. Es el mismo valor, pero el nombre tiene que decir para qué se usa.
+ *
+ * Solo para controles sobre fotografía. Sobre las superficies del sistema el
+ * anillo de la capa base ya cumple y el halo sobraría.
+ */
+@utility focus-ring-photo {
+  &:focus-visible {
+    outline-color: var(--color-ink);
+    box-shadow: 0 0 0 2px var(--color-canvas);
+  }
+}

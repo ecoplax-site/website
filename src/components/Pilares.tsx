@@ -103,7 +103,7 @@ export default function Pilares() {
                   /* Roving tabindex: solo la pestaña activa entra en el recorrido de Tab. */
                   tabIndex={isActive ? 0 : -1}
                   onClick={() => setActiveId(pillar.id)}
-                  className={`flex items-center gap-4 rounded-full pr-6 text-left font-body text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
+                  className={`flex items-center gap-4 rounded-full pr-6 text-left font-body text-sm ${
                     isActive ? ACTIVE_TAB_STYLES : INACTIVE_TAB_STYLES
                   }`}
                 >

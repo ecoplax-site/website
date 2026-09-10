@@ -1,7 +1,6 @@
 import { Fragment } from "react";
 import Image from "next/image";
 import ContactButton from "@/components/ContactButton";
-import Header from "@/components/Header";
 import EspecieroSceneLoader from "@/components/three/EspecieroSceneLoader";
 import { heroContent } from "@/content/hero";
 
@@ -15,9 +14,10 @@ export default function Hero() {
         texto e indicador de scroll—, así que el indicador conserva su separación
         del borde inferior sin ajuste propio.
 
-        NO alcanza al header: ese va superpuesto, fuera del flujo, y pone su
-        propio padding (ver Header.tsx). Este valor se puede cambiar sin que el
-        header se mueva.
+        NO alcanza al header: la barra ya no vive aquí dentro —se pinta desde el
+        layout, en todas las rutas— y se superpone a esta tarjeta posicionándose
+        ella misma contra el viewport, con su propio margen y su propio padding
+        (ver Header.tsx). Este valor se puede cambiar sin que la barra se mueva.
 
         Ojo: este es el padding INTERNO de la tarjeta, distinto del de la
         <section>, que es el margen de la tarjeta respecto al viewport.
@@ -52,21 +52,6 @@ export default function Hero() {
             sizes="100vw"
             className="z-0 object-cover object-center"
           />
-
-          {/*
-            El header se superpone a la tarjeta en lugar de ir en su flujo.
-
-            Al posicionarlo en absoluto, su caja se mide contra la CAJA DE
-            PADDING de la tarjeta —que es el borde de la tarjeta, no el borde
-            interior del padding—, así que el p-10/sm:p-14/lg:p-20 de arriba no
-            le llega y el espacio con el borde lo decide él. Los dos paddings
-            quedan independientes: mover uno no mueve al otro.
-
-            z-10 lo mantiene sobre la escena 3D, que va en z-[5].
-          */}
-          <div className="absolute inset-x-0 top-0 z-10">
-            <Header />
-          </div>
 
           {/*
             pointer-events-none en los contenedores: son cajas que abarcan todo el
