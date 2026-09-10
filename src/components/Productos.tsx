@@ -32,11 +32,30 @@ const BENTO_COLUMN = "lg:col-span-8";
   composición: a 150px de ancho por columna, la pieza grande quedaría como una
   franja alta y estrecha con el producto diminuto en el centro. Pasa a ocupar
   todo el ancho arriba y las dos pequeñas se ponen a su lado debajo.
+
+  Separación entre piezas: gap-8, 32px, igual en horizontal y en vertical. Es el
+  doble del gap-4 que llevaba y existe como token, sin valores sueltos. Ojo: el
+  ancho del bento no cambia, así que ese hueco extra sale de las celdas —se
+  reparten menos ancho— y, como el alto de fila lo marca el aspect de las
+  pequeñas, la tarjeta baja unos píxeles de propina.
+
+  ALTURA DE LA TARJETA. La marcan las celdas pequeñas y solo ellas: son las que
+  llevan aspect, de ahí sale el alto de cada fila, y la grande se limita a
+  ocupar las dos. La columna de texto no pinta nada —mide 162px— y el padding
+  del Section son 128px fijos. Es decir, de los 855px que medía la tarjeta a
+  1440px, 727 eran bento.
+
+  En escritorio las pequeñas van en 4:3 y no en cuadrado, que es lo que antes
+  disparaba el alto: en cuadrado el bento medía 727px a 1440 y 1002px a 1920,
+  porque el lado del cuadrado crece con el ancho de la columna y luego se
+  multiplica por dos filas. En 4:3 la tarjeta baja alrededor de un 20% en todos
+  los anchos. En móvil siguen cuadradas: allí la celda es estrecha y el problema
+  no existe.
 */
-const BENTO_GRID = "grid grid-cols-2 gap-4 lg:grid-cols-7 lg:grid-rows-2";
+const BENTO_GRID = "grid grid-cols-2 gap-8 lg:grid-cols-7 lg:grid-rows-2";
 const BENTO_LARGE =
   "col-span-2 aspect-4/3 lg:col-span-4 lg:row-span-2 lg:aspect-auto lg:h-full";
-const BENTO_SMALL = "aspect-square lg:col-span-3";
+const BENTO_SMALL = "aspect-square lg:col-span-3 lg:aspect-4/3";
 
 /*
   Pieza del bento. Radio 16px, el de tarjeta anidada.
@@ -93,12 +112,24 @@ export default function Productos() {
     surface-soft: la sección anterior es Pilares, que es muted, y la siguiente
     es Noticias, que no lleva tarjeta y deja ver surface-base. Soft no repite
     tono con ninguna de las dos.
+
+    padding="even": el contenido es una retícula con su propio hueco, así que el
+    aire extra que el sistema pone arriba y abajo se leía como vacío. Con "even"
+    la distancia al borde es la misma por los cuatro lados. Es un override
+    acotado a esta sección: el resto sigue con el padding por defecto.
   */
   return (
-    <Section id="productos" surface="soft">
+    <Section id="productos" surface="soft" padding="even">
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12">
-        <div className={`flex flex-col gap-4 ${TEXT_COLUMN}`}>
-          <h2 className={`${sectionTypography.heading} text-ink`}>
+        {/*
+          lg:self-end alinea el bloque abajo, no arriba: su base queda a la
+          altura de la base del bento, que es la pieza más alta de la fila. En
+          móvil no aplica —el grid es de una columna y el texto va encima—, que
+          es lo que hace que baste con la variante lg y no haya que tocar el
+          items-start de la fila.
+        */}
+        <div className={`flex flex-col gap-4 lg:self-end ${TEXT_COLUMN}`}>
+          <h2 className={`${sectionTypography.headingLarge} text-ink`}>
             {productosContent.headline}
           </h2>
           <p className={`${sectionTypography.body} text-ink-soft`}>

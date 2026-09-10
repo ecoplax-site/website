@@ -238,7 +238,7 @@ export default function Noticias() {
                     <div aria-hidden="true" className={COVER_PLACEHOLDER} />
                     <div aria-hidden="true" className={COLOR_LAYER} />
 
-                    <h3 className="relative font-heading text-xl leading-tight font-semibold text-ink-inverse sm:text-2xl">
+                    <h3 className="relative font-heading text-xl font-semibold text-ink-inverse sm:text-2xl">
                       {nota.title}
                     </h3>
                   </a>

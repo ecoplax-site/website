@@ -77,7 +77,7 @@ export default function Hero() {
                 líneas se leen seguidas, separadas por el espacio que va tras cada
                 una, y el texto se ajusta solo.
               */}
-              <h1 className="pointer-events-auto font-heading text-4xl leading-tight font-semibold sm:text-5xl lg:text-6xl">
+              <h1 className="pointer-events-auto font-heading text-4xl font-semibold sm:text-5xl lg:text-6xl">
                 {heroContent.headlineLines.map((line, index) => (
                   <Fragment key={line}>
                     {index > 0 && <br className="hidden xl:inline" />}

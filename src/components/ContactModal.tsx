@@ -277,7 +277,7 @@ function ContactModal({
           />
           <h2
             id={titleId}
-            className="relative font-heading text-3xl leading-tight font-semibold text-ink-inverse"
+            className="relative font-heading text-3xl font-semibold text-ink-inverse"
           >
             {contactoContent.title}
           </h2>

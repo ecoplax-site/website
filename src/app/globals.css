@@ -82,6 +82,14 @@
  *   - ink e ink-soft no deben usarse como texto sobre surface-accent: al ser
  *     ambos oscuros sobre un fondo oscuro, el contraste es prácticamente nulo.
  */
+/*
+  Interlineado de los titulares. Un escalón por debajo de leading-tight (1.25),
+  que es lo que llevaban antes. Lo consume la capa base, más abajo.
+*/
+@theme {
+  --leading-heading: 1;
+}
+
 @theme {
   --color-surface-base: var(--color-canvas);
   --color-surface-raised: var(--color-mist);
@@ -178,5 +186,46 @@
   &:focus-visible {
     outline-color: var(--color-ink);
     box-shadow: 0 0 0 2px var(--color-canvas);
+  }
+}
+
+/*
+ * Capa base — interlineado de los titulares.
+ *
+ * Declaración única para todo el sitio. Antes cada titular llevaba su propio
+ * `leading-tight`: estaba escrito seis veces —en las dos escalas de Section, en
+ * el h1 del hero, en el h3 de las tarjetas de noticias y en los títulos de los
+ * dos modales— y cambiarlo obligaba a tocar seis archivos.
+ *
+ * Va un escalón por debajo de tight: de 1.25 a 1, que son los dos primeros
+ * peldaños de la escala de interlineado de Tailwind (leading-tight y
+ * leading-none). No es un valor suelto: es el escalón siguiente.
+ *
+ * Se declara como token propio, --leading-heading, y no como var(--leading-none):
+ * ese no existe. Tailwind solo materializa como variable los peldaños que
+ * alguien usa por su nombre, y leading-none escribe el 1 literal. Apuntar a una
+ * variable inexistente dejaba el valor inválido y la regla no hacía nada.
+ *
+ * Se engancha a font-heading y no a h1/h2/h3 a propósito: lo que define un
+ * titular aquí es la tipografía de titulares, no la etiqueta. Así lo hereda
+ * también algún bloque que va con DM Sans sin ser encabezado, y no lo hereda un
+ * <h3> que un día se componga con la tipografía de texto.
+ *
+ * Se escribe en --tw-leading y no en line-height directamente. Las utilidades
+ * text-* de Tailwind resuelven su interlineado como
+ * `line-height: var(--tw-leading, var(--text-XX--line-height))`, así que viven
+ * en la capa de utilidades y le ganarían a un line-height puesto aquí: sin este
+ * rodeo, un text-2xl seguiría en 1.33 y un text-4xl en 1.11. Poniendo la
+ * variable, el valor entra por el hueco que la propia utilidad deja.
+ *
+ * Y sigue siendo una excepción fácil: cualquier `leading-*` en un componente
+ * escribe esa misma variable desde la capa de utilidades y gana.
+ *
+ * El texto corrido, los párrafos y las etiquetas no se tocan: van con
+ * font-body y conservan el interlineado por defecto.
+ */
+@layer base {
+  .font-heading {
+    --tw-leading: var(--leading-heading);
   }
 }

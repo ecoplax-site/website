@@ -34,7 +34,18 @@ export const sectionTypography = {
    * Hero (src/components/Hero.tsx): si cambia allí, cambia aquí.
    */
   eyebrow: "font-body text-xs font-semibold tracking-widest uppercase",
-  heading: "font-heading text-3xl leading-tight font-semibold sm:text-4xl",
+  heading: "font-heading text-3xl font-semibold sm:text-4xl",
+  /**
+   * Titular con más presencia que el de sección. En móvil mide lo mismo que
+   * `heading`, 30px, y sube un escalón desde sm: 48px frente a los 36px de
+   * aquel.
+   *
+   * El titular del hero va en 36/48/60px. En móvil este se queda por debajo
+   * (30 contra 36) y en lg también (48 contra 60), pero en el tramo sm los dos
+   * miden 48px. Nunca coinciden en pantalla —el hero solo está en la home y no
+   * comparte pliegue con ninguna sección—, pero conviene saberlo.
+   */
+  headingLarge: "font-heading text-3xl font-semibold sm:text-5xl",
   body: "font-body text-base sm:text-lg",
 } as const;
 
@@ -70,6 +81,25 @@ const surfaceStyles: Record<
   },
 };
 
+/*
+  Padding interno de la tarjeta.
+
+  Por defecto el vertical es mayor que el lateral —48/64px frente a 24/40px—,
+  que es el aire que pide una sección de texto corrido.
+
+  "even" lo iguala al lateral: misma distancia al borde por los cuatro lados.
+  Sirve para secciones cuyo contenido es una retícula de piezas con su propio
+  hueco, donde el aire de más arriba y abajo se lee como vacío y no como
+  respiración. El lateral no cambia en ningún caso: es el que alinea el
+  contenido de todas las secciones entre sí.
+*/
+const paddingStyles = {
+  default: "py-12 sm:py-16",
+  even: "py-6 sm:py-10",
+} as const;
+
+type SectionPadding = keyof typeof paddingStyles;
+
 type SectionProps = {
   /** Ancla de navegación (#id). Opcional. */
   id?: string;
@@ -84,6 +114,11 @@ type SectionProps = {
   intro?: string;
   /** Superficie de la tarjeta. Por defecto la más cercana al fondo. */
   surface?: SectionSurface;
+  /**
+   * Padding vertical de la tarjeta. Por defecto el del sistema, mayor que el
+   * lateral; "even" lo iguala a él. Ver paddingStyles.
+   */
+  padding?: SectionPadding;
   /** Retícula de la sección: tarjetas hijas, bloques de imagen, etc. */
   children?: ReactNode;
 };
@@ -93,6 +128,7 @@ export default function Section({
   heading,
   intro,
   surface = "raised",
+  padding = "default",
   children,
 }: SectionProps) {
   const styles = surfaceStyles[surface];
@@ -100,7 +136,7 @@ export default function Section({
   return (
     <section id={id} className="mt-6 px-4 sm:mt-10 sm:px-6">
       <div
-        className={`rounded-3xl px-6 py-12 sm:px-10 sm:py-16 ${styles.card}`}
+        className={`rounded-3xl px-6 sm:px-10 ${paddingStyles[padding]} ${styles.card}`}
       >
         {heading ? (
           <div className="flex max-w-2xl flex-col gap-4">

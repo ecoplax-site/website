@@ -263,7 +263,7 @@ function ModalPanel({
           <div className="mb-6 flex items-start justify-between gap-4">
             <h2
               id={titleId}
-              className="font-heading text-2xl leading-tight font-semibold text-ink"
+              className="font-heading text-2xl font-semibold text-ink"
             >
               {title}
             </h2>
