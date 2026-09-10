@@ -23,21 +23,32 @@ const BENTO_COLUMN = "lg:col-span-8";
 /*
   Bento.
 
-  En escritorio, dos columnas: la grande a la izquierda ocupando las dos filas
-  de alto, y las dos pequeñas apiladas a la derecha. Se reparten 4 y 3 de 7 en
-  lugar de mitad y mitad para que la pieza grande no quede en un formato
-  demasiado estrecho y alto.
+  En escritorio, tres columnas: una pieza alta a la izquierda, las dos pequeñas
+  apiladas en el centro y otra pieza alta a la derecha. Cada alta ocupa las dos
+  filas.
+
+  El reparto es de 4, 3 y 4 sobre once columnas. No es un número redondo, pero
+  es el que deja las dos altas en proporción 0.84, casi el 4:5 de las fotos, así
+  que object-contain apenas deja banda. Con 3/2/3 sobre ocho salían en 0.95,
+  demasiado cuadradas para un envase vertical.
+
+  Las columnas de las dos piezas centrales y de la última van declaradas con
+  col-start y no dejadas a la colocación automática: la rejilla, al ver hueco a
+  la derecha en la primera fila, metía ahí la segunda pequeña en vez de
+  apilarla debajo de la primera.
 
   Por debajo de lg se reorganiza en vertical en lugar de mantener la
-  composición: a 150px de ancho por columna, la pieza grande quedaría como una
-  franja alta y estrecha con el producto diminuto en el centro. Pasa a ocupar
-  todo el ancho arriba y las dos pequeñas se ponen a su lado debajo.
+  composición: a 150px de ancho por columna, las piezas altas quedarían como
+  franjas estrechas con el producto diminuto en el centro. Cada alta ocupa todo
+  el ancho y las dos pequeñas van juntas en una fila entre ambas, así que el
+  ritmo de la composición —alta, dos pequeñas, alta— se mantiene en vertical.
 
-  Separación entre piezas: gap-8, 32px, igual en horizontal y en vertical. Es el
-  doble del gap-4 que llevaba y existe como token, sin valores sueltos. Ojo: el
-  ancho del bento no cambia, así que ese hueco extra sale de las celdas —se
-  reparten menos ancho— y, como el alto de fila lo marca el aspect de las
-  pequeñas, la tarjeta baja unos píxeles de propina.
+  Separación entre piezas: gap-5, 20px, igual en horizontal y en vertical. Dos
+  tercios de los 32px anteriores serían 21.33, que no es un peldaño de la
+  escala; de los dos que lo rodean —20 y 24— el más cercano es 20. Ojo: el ancho
+  del bento no cambia, así que el hueco que se libera vuelve a las celdas —se
+  reparten más ancho— y, como el alto de fila lo marca el aspect de las
+  pequeñas, la tarjeta sube unos píxeles de propina.
 
   ALTURA DE LA TARJETA. La marcan las celdas pequeñas y solo ellas: son las que
   llevan aspect, de ahí sale el alto de cada fila, y la grande se limita a
@@ -52,10 +63,24 @@ const BENTO_COLUMN = "lg:col-span-8";
   los anchos. En móvil siguen cuadradas: allí la celda es estrecha y el problema
   no existe.
 */
-const BENTO_GRID = "grid grid-cols-2 gap-8 lg:grid-cols-7 lg:grid-rows-2";
-const BENTO_LARGE =
-  "col-span-2 aspect-4/3 lg:col-span-4 lg:row-span-2 lg:aspect-auto lg:h-full";
-const BENTO_SMALL = "aspect-square lg:col-span-3 lg:aspect-4/3";
+const BENTO_GRID = "grid grid-cols-2 gap-5 lg:grid-cols-11 lg:grid-rows-2";
+const BENTO_ALTA_BASE =
+  "col-span-2 aspect-4/3 lg:col-span-4 lg:aspect-auto lg:h-full";
+const BENTO_ALTA = `${BENTO_ALTA_BASE} lg:row-span-2`;
+const BENTO_SMALL = "aspect-square lg:col-start-5 lg:col-span-3 lg:aspect-4/3";
+/*
+  La última pieza fija fila y columna en vez de dejarse colocar.
+
+  La colocación automática nunca retrocede: al llegar aquí el cursor ya había
+  bajado de fila colocando la segunda pieza pequeña, así que sin fila fijada
+  esta caía en la segunda en lugar de ocupar las dos.
+
+  Y la fila se declara con start/end y no con row-span: row-span emite el
+  atajo `grid-row`, que escribe también el inicio, y en la hoja compilada va
+  después de row-start; el atajo pisaba la fila fijada y volvía a dejarla en
+  automático. row-end-3 solo toca el final y no se estorban.
+*/
+const BENTO_ALTA_FINAL = `${BENTO_ALTA_BASE} lg:col-start-8 lg:row-start-1 lg:row-end-3`;
 
 /*
   Pieza del bento. Radio 16px, el de tarjeta anidada.
@@ -67,8 +92,29 @@ const BENTO_SMALL = "aspect-square lg:col-span-3 lg:aspect-4/3";
   cortar el envase, y las proporciones de celda de un bento no coinciden con las
   de la foto.
 */
+/*
+  Elevación al pasar por encima y al recibir el foco.
+
+  El mismo tratamiento en las dos, no solo en hover: quien navega con teclado
+  tiene que ver lo mismo que quien navega con el ratón. Va en focus-visible y no
+  en focus, para que no salte al hacer clic.
+
+  Reparto entre lo que se mueve y lo que no:
+
+    - La SOMBRA se aplica siempre, también con prefers-reduced-motion activo.
+      No es movimiento: es la señal de que la tarjeta responde, y quitarla
+      dejaría al usuario con reduced-motion sin ninguna respuesta al foco más
+      allá del anillo.
+    - El DESPLAZAMIENTO y la transición van bajo motion-safe. Con
+      prefers-reduced-motion la tarjeta no se mueve ni un píxel y la sombra
+      aparece de golpe, sin recorrido.
+
+  4px de subida y 500ms: lento y corto a propósito. Con más recorrido la pieza
+  se despega de la retícula, y con menos duración el gesto se lee como un
+  parpadeo. ease-out en los dos sentidos, así que entra y sale igual de suave.
+*/
 const TILE_STYLES =
-  "relative block overflow-hidden rounded-2xl bg-surface-base";
+  "relative block overflow-hidden rounded-2xl bg-surface-base hover:shadow-lg focus-visible:shadow-lg motion-safe:transition motion-safe:duration-500 motion-safe:ease-out motion-safe:hover:-translate-y-1 motion-safe:focus-visible:-translate-y-1";
 
 function BentoTile({
   id,
@@ -106,7 +152,8 @@ function BentoTile({
 }
 
 export default function Productos() {
-  const [grande, ...pequenas] = productosContent.destacados;
+  const [grande, pequenaArriba, pequenaAbajo, ultima] =
+    productosContent.destacados;
 
   /*
     surface-soft: la sección anterior es Pilares, que es muted, y la siguiente
@@ -140,17 +187,22 @@ export default function Productos() {
         <div className={`${BENTO_GRID} ${BENTO_COLUMN}`}>
           <BentoTile
             id={grande}
-            className={BENTO_LARGE}
-            sizes="(min-width: 1024px) 30vw, 100vw"
+            className={BENTO_ALTA}
+            sizes="(min-width: 1024px) 22vw, 100vw"
           />
-          {pequenas.map((id) => (
+          {[pequenaArriba, pequenaAbajo].map((id) => (
             <BentoTile
               key={id}
               id={id}
               className={BENTO_SMALL}
-              sizes="(min-width: 1024px) 22vw, 50vw"
+              sizes="(min-width: 1024px) 16vw, 50vw"
             />
           ))}
+          <BentoTile
+            id={ultima}
+            className={BENTO_ALTA_FINAL}
+            sizes="(min-width: 1024px) 22vw, 100vw"
+          />
         </div>
       </div>
     </Section>

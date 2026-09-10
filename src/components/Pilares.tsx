@@ -53,8 +53,10 @@ export default function Pilares() {
     const lastIndex = pillars.length - 1;
     let nextIndex: number | null = null;
 
-    if (event.key === "ArrowDown") nextIndex = (activeIndex + 1) % pillars.length;
-    else if (event.key === "ArrowUp") nextIndex = (activeIndex + lastIndex) % pillars.length;
+    if (event.key === "ArrowDown")
+      nextIndex = (activeIndex + 1) % pillars.length;
+    else if (event.key === "ArrowUp")
+      nextIndex = (activeIndex + lastIndex) % pillars.length;
     else if (event.key === "Home") nextIndex = 0;
     else if (event.key === "End") nextIndex = lastIndex;
     if (nextIndex === null) return;
@@ -68,46 +70,95 @@ export default function Pilares() {
   return (
     <Section id="pilares" surface="muted">
       <div className="grid grid-cols-1 items-start gap-10 md:grid-cols-2 lg:grid-cols-24">
-        <div className="flex flex-col gap-6 md:col-span-2 md:row-start-1 lg:col-span-8 lg:col-start-1">
-          <p className={`${sectionTypography.eyebrow} text-ink-soft`}>
-            {pilaresContent.eyebrow}
-          </p>
-          <h2 className={`${sectionTypography.heading} text-ink`}>
-            {pilaresContent.headline}
-          </h2>
-          <p className={`${sectionTypography.body} text-ink-soft`}>
-            {pilaresContent.intro}
-          </p>
+        {/*
+          Contenedor de texto e imagen.
 
-          <div
-            role="tablist"
-            aria-orientation="vertical"
-            aria-label={pilaresContent.selectorLabel}
-            onKeyDown={handleKeyDown}
-            className="mt-2 flex flex-col gap-3"
-          >
-            {pillars.map((pillar) => {
-              const isActive = pillar.id === activeId;
+          Existe para que solo estos dos se midan entre sí. Antes la columna de
+          tarjetas entraba en la misma fila y era la más alta por debajo de
+          1440px —698px frente a 564 del texto a 1024—, así que aunque la imagen
+          se estirase, se estiraba hasta las tarjetas y no hasta el selector.
+          Sacándolas de la ecuación, el alto de la fila lo marca la columna de
+          texto y la imagen lo copia.
 
-              return (
-                <button
-                  key={pillar.id}
-                  ref={(element) => {
-                    tabRefs.current[pillar.id] = element;
-                  }}
-                  id={tabId(pillar.id)}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-controls={panelId}
-                  /* Roving tabindex: solo la pestaña activa entra en el recorrido de Tab. */
-                  tabIndex={isActive ? 0 : -1}
-                  onClick={() => setActiveId(pillar.id)}
-                  className={`flex items-center gap-4 rounded-full pr-6 text-left font-body text-sm ${
-                    isActive ? ACTIVE_TAB_STYLES : INACTIVE_TAB_STYLES
-                  }`}
-                >
-                  {/*
+          self-stretch: el contenedor crece hasta el alto de la fila, que lo
+          marca la columna de tarjetas. No se puede al revés —encoger las
+          tarjetas hasta el texto— porque a 1024px sus tres textos suman 618px
+          con el padding y solo hay 564 disponibles: ni quitando los huecos
+          entre ellas cabrían. Así que manda la más alta y las otras dos bajan a
+          buscarla.
+
+          display: contents por debajo de lg: el contenedor desaparece de la
+          maquetación y sus dos hijos siguen siendo hijos directos de la
+          retícula exterior, así que la colocación de md no cambia. De lg en
+          adelante es una retícula de 15 columnas, que son exactamente las 15
+          primeras de la exterior: con el mismo gap, el ancho de columna
+          resultante es idéntico al de antes, así que ni el texto ni la imagen
+          cambian de ancho.
+        */}
+        <div className="contents lg:col-span-15 lg:col-start-1 lg:row-start-1 lg:grid lg:grid-cols-15 lg:gap-10 lg:self-stretch">
+          <div className="flex flex-col gap-6 md:col-span-2 md:row-start-1 lg:col-span-8 lg:col-start-1">
+            <p className={`${sectionTypography.eyebrow} text-ink-soft`}>
+              {pilaresContent.eyebrow}
+            </p>
+            <h2 className={`${sectionTypography.heading} text-ink`}>
+              {pilaresContent.headline}
+            </h2>
+            <p className={`${sectionTypography.body} text-ink-soft`}>
+              {pilaresContent.intro}
+            </p>
+
+            <div
+              role="tablist"
+              aria-orientation="vertical"
+              aria-label={pilaresContent.selectorLabel}
+              onKeyDown={handleKeyDown}
+              /*
+              mt-4 y no mt-2: la columna izquierda separa a sus hijos con
+              gap-6 (24px), así que con 16px más el hueco entre el párrafo y el
+              selector queda en los 40px del resto de la sección. Se ajusta aquí
+              y no subiendo el gap de la columna porque ese gap también separa
+              etiqueta, titular y párrafo entre sí, que son un bloque de texto y
+              no piezas de la retícula.
+
+              gap-10, el mismo hueco que separa las tres columnas de la sección.
+              Antes eran 12px y las tarjetas de la derecha 16px: tres medidas
+              distintas para lo mismo. Ahora los cuatro huecos de la sección
+              —entre columnas y dentro de cada una— miden 40px.
+            */
+              /*
+              lg:mt-auto empuja el selector al fondo de la columna, que ahora se
+              estira hasta el alto de las tarjetas. Es lo que hace que su base
+              coincida con la de la imagen y con la de la última tarjeta.
+
+              El precio: de lg en adelante el hueco entre el párrafo y el
+              selector deja de ser los 40px unificados y pasa a ser lo que
+              sobre, que depende de cuánto texto tengan las tarjetas. Por debajo
+              de lg no hay estiramiento y el mt-4 sigue dando los 40px.
+            */
+              className="mt-4 flex flex-col gap-10 lg:mt-auto"
+            >
+              {pillars.map((pillar) => {
+                const isActive = pillar.id === activeId;
+
+                return (
+                  <button
+                    key={pillar.id}
+                    ref={(element) => {
+                      tabRefs.current[pillar.id] = element;
+                    }}
+                    id={tabId(pillar.id)}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={panelId}
+                    /* Roving tabindex: solo la pestaña activa entra en el recorrido de Tab. */
+                    tabIndex={isActive ? 0 : -1}
+                    onClick={() => setActiveId(pillar.id)}
+                    className={`flex items-center gap-4 rounded-full pr-6 text-left font-body text-sm ${
+                      isActive ? ACTIVE_TAB_STYLES : INACTIVE_TAB_STYLES
+                    }`}
+                  >
+                    {/*
                     Hueco circular del icono, del mismo alto que la pastilla: la
                     pastilla no lleva padding vertical, así que su alto es el
                     diámetro de este círculo.
@@ -119,18 +170,50 @@ export default function Pilares() {
                     —también por el peso del texto y por este círculo—, como pide
                     WCAG 2.1 en 1.4.1.
                   */}
-                  <span
-                    aria-hidden="true"
-                    className={`h-14 w-14 shrink-0 rounded-full ${
-                      isActive
-                        ? "bg-surface-soft"
-                        : "border border-ink-soft/30 bg-transparent"
-                    }`}
-                  />
-                  {pillar.name}
-                </button>
-              );
-            })}
+                    <span
+                      aria-hidden="true"
+                      className={`h-14 w-14 shrink-0 rounded-full ${
+                        isActive
+                          ? "bg-surface-soft"
+                          : "border border-ink-soft/30 bg-transparent"
+                      }`}
+                    />
+                    {pillar.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/*
+          Panel de imagen.
+
+          YA NO TIENE PROPORCIÓN ESTABLE EN ESCRITORIO. Por debajo de lg sigue
+          en 3:4, pero de lg en adelante se estira al alto de la fila, que lo
+          marca la columna de texto: es lo que hace que su base coincida con la
+          del selector. Su proporción pasa a depender del ancho de la ventana.
+
+          AL RECIBIR LA FOTOGRAFÍA hay que revisar el encuadre en todo el rango,
+          no en una captura: la celda va de proporción alta y estrecha en
+          pantallas medias a casi cuadrada en las anchas, y un encuadre que
+          funcione a 1440 puede dejar el motivo fuera a 1024 o a 1920. Debe ir
+          con object-cover para que la foto no se deforme al estirarse:
+
+            <Image src={...} alt={...} fill className="object-cover" />
+
+          El radio de tarjeta hija (16px) y el relative para el <Image fill> ya
+          los pone este contenedor.
+
+          lg:row-start-1 hace falta para deshacer el md:row-start-2: las
+          variantes de Tailwind son mínimos, no tramos, así que el de md sigue
+          activo en lg y sin esto la imagen caía a una segunda fila del
+          contenedor, con alto cero.
+        */}
+          <div className="relative aspect-3/4 w-full overflow-hidden rounded-2xl md:col-start-1 md:row-start-2 lg:col-span-7 lg:col-start-9 lg:row-start-1 lg:aspect-auto lg:h-full">
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-surface-soft"
+            />
           </div>
         </div>
 
@@ -148,23 +231,6 @@ export default function Pilares() {
           className="md:col-start-2 md:row-start-2 lg:col-span-9 lg:col-start-16 lg:row-start-1"
         >
           <PillarCards key={activePillar.id} cards={activePillar.cards} />
-        </div>
-
-        <div className="md:col-start-1 md:row-start-2 lg:col-span-7 lg:col-start-9 lg:row-start-1">
-          {/*
-            El contenedor ya fija la proporción 3:4 y el radio de tarjeta hija
-            (16px), y es relative para admitir <Image fill>. Sustituir el div
-            interior por el <Image> no cambia el layout.
-
-            PENDIENTE fotografía de producto o planta Apan.
-            Al recibirla: <Image src={...} alt={...} fill className="object-cover" />
-          */}
-          <div className="relative aspect-3/4 w-full overflow-hidden rounded-2xl">
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 bg-surface-soft"
-            />
-          </div>
         </div>
       </div>
     </Section>
@@ -196,7 +262,8 @@ function PillarCards({ cards }: { cards: string[] }) {
       }`;
 
   return (
-    <ul role="list" className={`flex flex-col gap-4 ${motionClasses}`}>
+    /* gap-10: el hueco unificado de la sección. Ver el selector de pilares. */
+    <ul role="list" className={`flex flex-col gap-10 ${motionClasses}`}>
       {cards.map((card) => (
         <li
           key={card}
