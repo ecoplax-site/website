@@ -91,7 +91,7 @@ export const catalogoContent: CatalogoContent = {
     {
       id: "90794",
       nombre: "BOTELLA OVAL 500 ML SQ NUEVA IMAGEN CRISTAL",
-      imagen: "/images/productos/2.png",
+      imagen: "/images/productos/2-sin-fondo.png",
       imagenAlt: "Botella oval de 500 ml, acabado cristal",
       caracteristicas: [
         { label: "Capacidad", value: "500 ml" },
@@ -103,7 +103,7 @@ export const catalogoContent: CatalogoContent = {
     {
       id: "91234",
       nombre: "VASO CIL. 15 ML DOSIFICADOR",
-      imagen: "/images/productos/3.png",
+      imagen: "/images/productos/3-sin-fondo.png",
       imagenAlt: "Vaso cilíndrico dosificador de 15 ml",
       caracteristicas: [
         { label: "Capacidad", value: "15 ml" },
@@ -115,7 +115,7 @@ export const catalogoContent: CatalogoContent = {
     {
       id: "90535",
       nombre: "BOTELLA CIL. 30 ML AMBAR",
-      imagen: "/images/productos/4.png",
+      imagen: "/images/productos/4-sin-fondo.png",
       imagenAlt: "Botella cilíndrica de 30 ml, color ámbar",
       caracteristicas: [
         { label: "Capacidad", value: "30 ml" },
@@ -127,7 +127,7 @@ export const catalogoContent: CatalogoContent = {
     {
       id: "91299",
       nombre: "TAPA 63 MM BLANCA C/LINER INTEG.",
-      imagen: "/images/productos/2.png",
+      imagen: "/images/productos/2-sin-fondo.png",
       imagenAlt: "Tapa de 63 mm con liner integrado, color blanco",
       caracteristicas: [
         { label: "Capacidad", value: "PENDIENTE" },
@@ -139,7 +139,7 @@ export const catalogoContent: CatalogoContent = {
     {
       id: "90053",
       nombre: "BOTELLA CIL. 150 ML AMBAR",
-      imagen: "/images/productos/3.png",
+      imagen: "/images/productos/3-sin-fondo.png",
       imagenAlt: "Botella cilíndrica de 150 ml, color ámbar",
       caracteristicas: [
         { label: "Capacidad", value: "150 ml" },
@@ -151,7 +151,7 @@ export const catalogoContent: CatalogoContent = {
     {
       id: "91300",
       nombre: "FRASCO CIL. 150 ML PASTILLERO AMBAR",
-      imagen: "/images/productos/4.png",
+      imagen: "/images/productos/4-sin-fondo.png",
       imagenAlt: "Frasco cilíndrico pastillero de 150 ml, color ámbar",
       caracteristicas: [
         { label: "Capacidad", value: "150 ml" },
@@ -163,7 +163,7 @@ export const catalogoContent: CatalogoContent = {
     {
       id: "90597",
       nombre: "TARRO CIL. 300 ML PRESION CRISTAL NUEVO",
-      imagen: "/images/productos/2.png",
+      imagen: "/images/productos/2-sin-fondo.png",
       imagenAlt: "Tarro cilíndrico de 300 ml de cierre a presión, acabado cristal",
       caracteristicas: [
         { label: "Capacidad", value: "300 ml" },
@@ -175,7 +175,7 @@ export const catalogoContent: CatalogoContent = {
     {
       id: "90596",
       nombre: "TAPA 80 MM PRESION TRANSPARENTE",
-      imagen: "/images/productos/3.png",
+      imagen: "/images/productos/3-sin-fondo.png",
       imagenAlt: "Tapa de 80 mm de cierre a presión, acabado transparente",
       caracteristicas: [
         { label: "Capacidad", value: "PENDIENTE" },

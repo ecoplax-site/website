@@ -16,19 +16,6 @@ import { catalogoContent, findProducto } from "@/content/catalogo";
  */
 
 /*
-  Dimensiones intrínsecas de las fotografías de producto: 1080x1350, es decir
-  4:5 vertical. Las tres disponibles hoy miden exactamente lo mismo.
-
-  El contenedor lleva esta misma proporción a propósito. Con 1:1 —la que tenía
-  el hueco de color— la foto habría que recortarla por arriba y por abajo, y en
-  un formato vertical eso se come el producto. Si las fotos definitivas llegan
-  con otra proporción, hay que cambiar estos dos números y la clase aspect del
-  contenedor a la vez: son el mismo dato escrito en dos sitios.
-*/
-const IMAGE_WIDTH = 1080;
-const IMAGE_HEIGHT = 1350;
-
-/*
   Todas las rutas del catálogo se prerrenderizan en el build. El contenido vive
   en el repo, no en un CMS: no hay nada que consultar en tiempo de petición.
 */
@@ -68,15 +55,17 @@ export default async function ProductoPage({
           {/*
             Fotografía de producto. Radio de tarjeta hija, 16px.
 
-            Dimensiones explícitas y no fill: el navegador reserva el hueco con
-            la proporción correcta antes de descargar nada, sin depender de que
-            el contenedor la fije. El aspect del contenedor y el par
-            IMAGE_WIDTH/IMAGE_HEIGHT dicen lo mismo, así que object-cover no
-            llega a recortar: está por si un día dejan de coincidir.
+            Contenedor 4:5 y foto con fill y object-contain. Las fotos están
+            recortadas a la silueta de cada producto, sin fondo, y cada una
+            tiene la proporción de su producto: object-contain las muestra
+            enteras y centradas dentro de la caja, sin cortar ni el cuello ni la
+            base. La proporción la fija el contenedor, así que el hueco se
+            reserva antes de descargar la foto.
 
-            surface-muted debajo: es lo que se ve mientras la imagen carga y si
-            fallara. Se elige sobre la tarjeta de sección, que es raised, porque
-            un tono igual al suyo no se distinguiría.
+            surface-muted debajo: es el fondo sobre el que se ve el producto
+            transparente, y lo que se ve mientras la imagen carga. Se elige
+            sobre la tarjeta de sección, que es raised, porque un tono igual al
+            suyo no se distinguiría.
 
             priority: es la imagen grande y sobre el pliegue de esta página, el
             LCP probable.
@@ -88,11 +77,10 @@ export default async function ProductoPage({
             <Image
               src={producto.imagen}
               alt={producto.imagenAlt}
-              width={IMAGE_WIDTH}
-              height={IMAGE_HEIGHT}
+              fill
               priority
               sizes="(min-width: 1024px) 50vw, 100vw"
-              className="h-full w-full object-cover"
+              className="object-contain"
             />
           </div>
 

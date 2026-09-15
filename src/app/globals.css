@@ -190,6 +190,22 @@
 }
 
 /*
+ * Utilidad — margen interior de las fotos del bento de Productos
+ * (src/components/Productos.tsx).
+ *
+ * Cada producto se ajusta a su propia celda y queda centrado, con el mismo
+ * margen por los cuatro lados. El padding en porcentaje se calcula siempre
+ * sobre el ANCHO de la celda, también el de arriba y abajo: así el margen mide
+ * lo mismo en píxeles por los cuatro lados de una celda, y es la misma
+ * proporción de ancho en todas. Tailwind no tiene un padding en porcentaje sin
+ * valores arbitrarios, de ahí la utilidad.
+ */
+@utility bento-product-inset {
+  padding: 10%;
+}
+
+
+/*
  * Utilidad — fila de Valores con hover que aparta a las vecinas
  * (src/components/Valores.tsx).
  *

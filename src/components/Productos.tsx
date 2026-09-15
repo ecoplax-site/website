@@ -140,13 +140,24 @@ function BentoTile({
       href={`/productos/${producto.id}`}
       className={`${TILE_STYLES} ${className}`}
     >
-      <Image
-        src={producto.imagen}
-        alt={producto.imagenAlt}
-        fill
-        sizes={sizes}
-        className="object-contain"
-      />
+      {/*
+        Cada producto se ajusta a su propia celda: el de una celda grande se ve
+        grande y el de una pequeña, pequeño. Va centrado con un margen interior
+        uniforme del 10% del ancho de la celda (utilidad bento-product-inset),
+        para que no toque los bordes. La imagen está recortada a la silueta del
+        producto, así que lo que se centra es el producto y no un lienzo con aire.
+      */}
+      <span className="bento-product-inset absolute inset-0">
+        <span className="relative block size-full">
+          <Image
+            src={producto.imagen}
+            alt={producto.imagenAlt}
+            fill
+            sizes={sizes}
+            className="object-contain"
+          />
+        </span>
+      </span>
     </a>
   );
 }

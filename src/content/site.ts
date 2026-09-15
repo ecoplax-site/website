@@ -16,6 +16,6 @@ export type SiteMetadata = {
 export const siteMetadata: SiteMetadata = {
   title: "Ecoplax | Envases de PET con resina reciclada",
   description:
-    "Envases plásticos sustentables fabricados en México. Resinas PCR, RPET y materiales de menor impacto, con certificación BRCGS y SMETA.",
+    "Envases plásticos sustentables fabricados en México por Cajaplax, empresa con certificación BRCGS y SMETA. Resinas PCR, RPET y materiales de menor impacto.",
   skipLinkLabel: "Saltar al contenido",
 };
