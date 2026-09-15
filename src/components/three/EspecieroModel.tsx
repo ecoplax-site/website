@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
-import { MathUtils, Mesh, MeshPhysicalMaterial } from "three";
+import { DoubleSide, MathUtils, Mesh, MeshPhysicalMaterial } from "three";
 import { withCreasedNormals } from "./creasedNormals";
+import { applyPetWall } from "./petWall";
 
 const MODEL_URL = "/models/especiero.glb";
 
@@ -62,29 +63,71 @@ export default function EspecieroModel() {
   const model = useMemo(() => {
     const clone = scene.clone(true);
     const petMaterial = new MeshPhysicalMaterial({
+      /*
+        Transmisión total, sin tinte: PET transparente.
+
+        El envase refracta el fondo real de la tarjeta —video o fotografía—, que
+        HeroBackdrop pinta dentro de la escena. Con eso la transmisión ya tiene
+        qué desviar y no hace falta mezclar difuso para darle cuerpo: la forma la
+        dan la distorsión del paisaje a través del volumen, el Fresnel de los
+        cantos y los reflejos de las tiras del <Environment>.
+      */
       transmission: 1,
       ior: 1.575, // índice de refracción real del PET
       /*
-        Espesor óptico, no espesor de pared. La pared real mide 1 mm, pero
-        `thickness` alimenta el recorrido de la luz dentro del volumen: con el
-        valor literal el envase se leía como una cáscara sin grueso. Subido
-        hasta que la boca y el anillo de la base acusan material.
+        Espesor óptico, no espesor de pared (la pared real mide 1 mm).
+
+        En la transmisión de three, thickness es la distancia que recorre el
+        rayo refractado antes de volver a muestrear el fondo: cuanto mayor, más
+        se desplaza el paisaje visto a través del envase. Con 0.02 el paisaje se
+        torcía tanto que el envase se leía como vidrio grueso. Con 0.005 —una
+        cuarta parte— el desplazamiento baja en la misma proporción y el fondo
+        se ve casi recto, con una desviación ligera, como PET de pared fina.
       */
-      thickness: 0.02,
+      thickness: 0.005,
       /*
-        Densidad óptica. La luz que atraviesa el volumen se tiñe hacia este
-        color a lo largo de attenuationDistance: es lo que separa "vidrio con
-        cuerpo" de "cristal vacío". Se usa Pastel Gray de la paleta oficial
-        para que el tinte caiga dentro de la marca en vez de inventar un verde.
+        Sin attenuationColor ni attenuationDistance: el tinte verde (#234b2c a
+        0.08) se retiró para que el envase se lea blancuzco y neutro. Sin ellos,
+        three no aplica atenuación de volumen y la luz transmitida no cambia de
+        color.
       */
-      attenuationColor: "#234b2c",
-      attenuationDistance: 0.08,
       roughness: 0.08,
       clearcoat: 1,
       clearcoatRoughness: 0.03,
       metalness: 0,
       transparent: true,
+      /*
+        Doble cara: la pared trasera se ve a través del cuerpo.
+
+        Con una sola cara, a través del envase solo llegaba el paisaje: nada
+        del propio frasco. Con DoubleSide three hace dos cosas:
+
+          - En la textura que refracta el envase pinta también las caras
+            traseras, así que la cara delantera refracta el paisaje CON la
+            pared de atrás delante, con sus reflejos y sus nervaduras.
+          - En el render final dibuja primero las caras traseras y luego las
+            delanteras, en dos pasadas.
+
+        La malla es una sola superficie sin grosor (a media altura del cuerpo
+        todos sus vértices están a 19.5 mm del eje): la "pared trasera" es la
+        mitad posterior de esa misma superficie, vista desde dentro.
+      */
+      side: DoubleSide,
+      /*
+        Sin tone mapping. El fondo de la escena (HeroBackdrop) sale sin tone
+        mapping para coincidir con el video de la página; si el envase lo
+        llevara, lo que se ve a través de él pasaría por la curva ACES y saldría
+        más oscuro que el paisaje de alrededor, sobre todo en las sombras, que
+        ACES aplasta. Medido en 1440×900 con la foto póster: con ACES, un fondo
+        de 28,32,24 salía a 10,13,8 a través del cuerpo; sin él, a 27,31,24.
+
+        Afecta también a los reflejos, que ya no se comprimen: sus picos
+        llegan a blanco en lugar de redondearse.
+      */
+      toneMapped: false,
     });
+    // Grosor de pared y difusión del PET soplado (ver petWall.ts).
+    applyPetWall(petMaterial);
 
     clone.traverse((object) => {
       if (object instanceof Mesh) {

@@ -1,8 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import {
+  getHeroBackdropVideo,
+  subscribeHeroBackdropVideo,
+} from "@/lib/heroBackdropVideo";
 
 /*
   Punto de entrada de la escena 3D desde el árbol de servidor.
@@ -53,6 +57,25 @@ export default function EspecieroSceneLoader() {
     titular, y la tarjeta con la ventana.
   */
   const [contentEdgePx, setContentEdgePx] = useState<number | null>(null);
+
+  /*
+    Fondo que refracta el envase: el mismo video y la misma fotografía que
+    pinta la tarjeta (ver HeroBackdrop). El video llega por el puente de
+    lib/heroBackdropVideo cuando empieza a reproducirse; la fotografía se busca
+    por data-hero-poster en la caja que la tarjeta comparte con esta capa.
+  */
+  const backdropVideo = useSyncExternalStore(
+    subscribeHeroBackdropVideo,
+    getHeroBackdropVideo,
+    () => null,
+  );
+  const backdropPoster = useMemo(
+    () =>
+      pointerArea?.parentElement?.parentElement?.querySelector<HTMLImageElement>(
+        "img[data-hero-poster]",
+      ) ?? null,
+    [pointerArea],
+  );
 
   useEffect(() => {
     const cardBox = pointerArea?.parentElement?.parentElement;
@@ -116,6 +139,8 @@ export default function EspecieroSceneLoader() {
           motionEnabled={hasFinePointer && !prefersReducedMotion}
           eventSource={pointerArea}
           contentEdgePx={contentEdgePx}
+          backdropVideo={backdropVideo}
+          backdropPoster={backdropPoster}
         />
       )}
     </div>

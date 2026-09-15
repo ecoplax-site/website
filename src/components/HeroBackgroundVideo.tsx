@@ -1,13 +1,24 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { setHeroBackdropVideo } from "@/lib/heroBackdropVideo";
 
 /*
   WebM primero y MP4 como alternativa: el navegador toma la primera fuente que
   sabe reproducir. Ambas son recompresiones del original, que vive fuera de
   public/ para no desplegarse: assets-source/videos/background-ecoplax.mp4.
   Las dos van a 1920×1074, sin pista de audio.
+
+  ETIQUETA DE COLOR. Los dos archivos declaran primarios y matriz BT.709 y
+  transferencia sRGB (iec61966-2-1). Sin transferencia declarada, macOS pinta
+  el video de la página aplicándole una curva que lo aclara —trata el archivo
+  como gamma 1.961 y lo convierte a sRGB—, mientras que WebGL sube los píxeles
+  tal cual. La escena 3D usa este mismo video como fondo refractado
+  (three/HeroBackdrop), así que desde lg el canvas y la página no coincidían.
+  Con la transferencia declarada, los dos caminos dan los valores del archivo.
+  Si se vuelven a exportar, hay que conservar la etiqueta: solo cambia los
+  metadatos, no los píxeles.
 */
 const VIDEO_SOURCES = [
   { src: "/videos/background-ecoplax-web.webm", type: "video/webm" },
@@ -53,15 +64,26 @@ export default function HeroBackgroundVideo() {
 function BackgroundVideo() {
   const [playing, setPlaying] = useState(false);
 
+  /*
+    muted se fija también como propiedad: React no siempre refleja el atributo,
+    y sin él los navegadores bloquean la reproducción automática.
+
+    Al desmontarse retira el video del puente con la escena 3D, que vuelve a
+    refractar la fotografía (ver lib/heroBackdropVideo).
+
+    useCallback sin dependencias: con una función nueva en cada render, React
+    ejecutaría la limpieza en cada re-render —el primero llega justo al empezar
+    a reproducirse— y el video se retiraría del puente nada más entregarse.
+  */
+  const attachVideo = useCallback((video: HTMLVideoElement | null) => {
+    if (!video) return;
+    video.muted = true;
+    return () => setHeroBackdropVideo(null);
+  }, []);
+
   return (
     <video
-      /*
-        muted se fija también como propiedad: React no siempre refleja el
-        atributo, y sin él los navegadores bloquean la reproducción automática.
-      */
-      ref={(video) => {
-        if (video) video.muted = true;
-      }}
+      ref={attachVideo}
       autoPlay
       muted
       loop
@@ -71,7 +93,14 @@ function BackgroundVideo() {
       disableRemotePlayback
       aria-hidden="true"
       tabIndex={-1}
-      onPlaying={() => setPlaying(true)}
+      /*
+        Al empezar a reproducirse se hace visible y se entrega a la escena 3D,
+        que lo usa como fondo refractado (ver three/HeroBackdrop).
+      */
+      onPlaying={(event) => {
+        setPlaying(true);
+        setHeroBackdropVideo(event.currentTarget);
+      }}
       className={`absolute inset-0 z-0 h-full w-full object-cover object-center ${
         playing ? "opacity-100" : "opacity-0"
       }`}

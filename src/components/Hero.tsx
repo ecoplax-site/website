@@ -49,10 +49,14 @@ export default function Hero() {
             overflow-hidden con rounded-3xl del propio contenedor.
 
             priority: está sobre el pliegue y es el LCP probable del hero.
+
+            data-hero-poster marca la fotografía para EspecieroSceneLoader: la
+            escena 3D la usa como fondo refractado mientras no hay video.
           */}
           <Image
             src="/images/hero-bg.webp"
             alt=""
+            data-hero-poster
             fill
             priority
             sizes="100vw"

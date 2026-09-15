@@ -5,6 +5,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
 import { MathUtils, Object3D, type Group } from "three";
 import EspecieroModel from "./EspecieroModel";
+import HeroBackdrop from "./HeroBackdrop";
 
 /*
   Todas las medidas están en metros, igual que el modelo.
@@ -280,6 +281,12 @@ type EspecieroSceneProps = {
 
 type CanvasProps = RigProps & {
   /*
+    Video y fotografía de la tarjeta, para pintarlos dentro de la escena y que
+    el envase los refracte (ver HeroBackdrop).
+  */
+  backdropVideo: HTMLVideoElement | null;
+  backdropPoster: HTMLImageElement | null;
+  /*
     Elemento que escucha el puntero. No es el canvas: el canvas sobresale por
     debajo de la tarjeta y ahí no debe capturar nada, así que va entero con
     pointer-events: none y quien escucha es una capa que cubre solo la tarjeta.
@@ -448,6 +455,8 @@ export default function EspecieroScene({
   motionEnabled,
   eventSource,
   contentEdgePx,
+  backdropVideo,
+  backdropPoster,
 }: CanvasProps) {
   return (
     <Canvas
@@ -566,6 +575,13 @@ export default function EspecieroScene({
         ambiental solo lavaba el contraste interno del vidrio. La direccional
         vive dentro de EspecieroRig, junto al envase (ver allí por qué).
       */}
+
+      {/*
+        Fondo de la tarjeta dentro de la escena, fuera del Suspense: no depende
+        de que cargue el GLB, y así el envase nunca llega a refractar la textura
+        vacía.
+      */}
+      <HeroBackdrop video={backdropVideo} poster={backdropPoster} />
 
       <Suspense fallback={null}>
         <EspecieroRig
