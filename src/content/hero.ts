@@ -27,7 +27,7 @@ export const heroContent: HeroContent = {
   eyebrow: "Una marca de Cajaplax",
   headlineLines: ["El envase que ya conoces,", "con otra huella"],
   subtitle:
-    "Resinas PCR, RPET y materiales de menor impacto, fabricados en Apan con el respaldo de más de 50 años de Cajaplax.",
+    "Resinas PCR, RPET y materiales de menor impacto, fabricados en Apan con el respaldo de más de cinco décadas de Cajaplax.",
   ctaLabel: "Solicitar cotización",
   scrollIndicatorLabel: "Desplázate para ver más contenido",
 };

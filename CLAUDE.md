@@ -117,7 +117,7 @@ Reglas de contenedor:
 - El fondo de la página es surface-base.
 - Toda tarjeta de sección lleva margen lateral respecto al viewport. Ninguna tarjeta toca el borde de la ventana.
 - Radio de esquina de tarjetas de sección: 24px. Tarjetas anidadas dentro de una sección: 16px. Controles y botones: 12px.
-- Excepción aprobada al radio de controles: los elementos con forma de pastilla usan radio completo. Aplica al selector de pilares y a las etiquetas de resina de Productos. El resto de controles —botones, campos de formulario— mantiene los 12px. No extiendas el radio completo a otros controles sin aprobación.
+- Excepción aprobada al radio de controles: los elementos con forma de pastilla o circulares usan radio completo. Aplica al selector de pilares, a las etiquetas de resina de Productos, a las píldoras de navegación del header, al botón CTA del header, al botón CTA del hero y al botón hamburguesa del menú móvil. El resto de controles —botones, campos de formulario— mantiene los 12px. No extiendas el radio completo a otros controles sin aprobación.
 - Las tarjetas se separan entre sí por espacio vertical, no por líneas divisorias.
 
 Jerarquía cromática:

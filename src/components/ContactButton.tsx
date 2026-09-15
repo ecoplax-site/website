@@ -9,14 +9,22 @@ import { useContactModal } from "@/components/ContactModal";
 
 const VARIANT_STYLES = {
   /*
-    Botón principal, bajo el subtítulo: verde de marca con texto claro. Es el
-    par fondo/texto que ya usa la tarjeta del hero, en el que ink-inverse mide
-    9.6:1 sobre surface-strong.
+    Botón principal, bajo el subtítulo, sobre el video del hero.
 
     pointer-events-auto: el contenedor del bloque de texto los desactiva para
     no congelar el giro del envase, así que el botón los recupera.
+
+    Sólido, con el mismo tratamiento que las píldoras de navegación del header
+    (NAV_PILL_BASE en Header.tsx): fondo eggshell (surface-soft), texto verde
+    de marca (ink), radio completo. El relleno es opaco, así que el contraste
+    del texto —8.44:1— no depende del video que tenga detrás.
+
+    Hover y foco, los de las píldoras: se invierte a verde de marca con texto
+    ink-inverse (9.59:1), con transición de color bajo motion-safe. El anillo
+    de foco es focus-ring-photo, de dos tonos, porque el hueco del
+    outline-offset cae sobre el video.
   */
-  hero: "pointer-events-auto rounded-xl bg-surface-strong px-6 py-3 text-ink-inverse focus-visible:outline-ink-inverse",
+  hero: "pointer-events-auto rounded-full bg-surface-soft px-6 py-3 text-ink motion-safe:transition-colors hover:bg-surface-strong hover:text-ink-inverse focus-visible:bg-surface-strong focus-visible:text-ink-inverse focus-ring-photo",
   /*
     Botón del header, sobre la tarjeta del hero. Verde de marca sólido, sin
     transparencia: es la acción principal y tiene que pesar más que las
