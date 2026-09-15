@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# archivos fuente que no se versionan (p. ej. el video original del hero)
+/assets-source/

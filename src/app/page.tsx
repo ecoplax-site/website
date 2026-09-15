@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import Origen from "@/components/Origen";
+import Valores from "@/components/Valores";
 import Pilares from "@/components/Pilares";
 import Productos from "@/components/Productos";
 import Materiales from "@/components/Materiales";
@@ -20,6 +21,7 @@ export default function Home() {
     <main id={MAIN_CONTENT_ID} tabIndex={-1}>
       <Hero />
       <Origen />
+      <Valores />
       <Materiales />
       <Pilares />
       <Productos />

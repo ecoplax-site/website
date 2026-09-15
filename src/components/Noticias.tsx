@@ -8,7 +8,7 @@ import {
   realBlockIndex,
   useLoopCarousel,
 } from "@/hooks/useLoopCarousel";
-import { noticiasContent } from "@/content/noticias";
+import { noticiasContent, notaHref } from "@/content/noticias";
 
 /**
  * Sección de últimas noticias: titular y carrusel de tarjetas de nota.
@@ -226,7 +226,7 @@ export default function Noticias() {
                     página de detalle de nota.
                   */}
                   <a
-                    href={nota.href}
+                    href={notaHref(nota.slug)}
                     className="relative flex aspect-2/3 flex-col justify-end overflow-hidden rounded-2xl p-6"
                   >
                     {/*

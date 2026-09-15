@@ -59,7 +59,7 @@ Sobre fondo Dark Vanilla #cdbda2 usa únicamente Cal Poly Pomona Green #234b2c. 
 
 Tipografía: el manual de marca especifica PP Mori, tipografía comercial sin licencia web adquirida. Sustitutos aprobados de Google Fonts:
 
-- Titulares: DM Sans
+- Titulares: Manrope
 - Texto corrido: Figtree
 
 Logotipo: archivos SVG proporcionados por el cliente, en public/images/brand.
@@ -105,15 +105,16 @@ Estas decisiones ya se tomaron y evaluaron. No las reviertas ni las "corrijas" a
 
 - Ejecuta la tarea una vez y reporta. No hagas ciclos repetidos de validación por tu cuenta.
 - La revisión visual la hace la agencia. No abras el navegador para juzgar cómo se ve algo.
+- Esto incluye medir: no levantes el servidor ni abras el navegador para tomar fotogramas por segundo, porcentajes de opacidad percibida, capturas comparativas ni ninguna métrica de un cambio visual. Aplica el cambio, reporta qué valores usaste y para. La medición solo procede cuando se reporta un fallo concreto que hay que reproducir.
 - Para diagnosticar un fallo reportado, sí levanta el servidor y reprodúcelo. No deduzcas la causa leyendo el código.
 
 ## Sistema visual: tarjetas
 
-El sitio se construye con lenguaje de tarjetas. Cada sección de la página es una tarjeta que flota sobre el fondo, nunca un bloque a sangre completa.
+Una sección puede ir de tres formas: en tarjeta, directamente sobre el fondo de página, o a sangre, con su color ocupando todo el ancho de la ventana, sin radio ni margen lateral. En una sección a sangre, el contenido conserva el margen lateral del resto de secciones para mantener la alineación. Lo decide la agencia sección por sección. Cuando no se indique, la sección va sobre el fondo, sin tarjeta.
 
 Reglas de contenedor:
 
-- El fondo de la página es surface-base. Es el aire entre tarjetas, no un lienzo con contenido encima.
+- El fondo de la página es surface-base.
 - Toda tarjeta de sección lleva margen lateral respecto al viewport. Ninguna tarjeta toca el borde de la ventana.
 - Radio de esquina de tarjetas de sección: 24px. Tarjetas anidadas dentro de una sección: 16px. Controles y botones: 12px.
 - Excepción aprobada al radio de controles: los elementos con forma de pastilla usan radio completo. Aplica al selector de pilares y a las etiquetas de resina de Productos. El resto de controles —botones, campos de formulario— mantiene los 12px. No extiendas el radio completo a otros controles sin aprobación.
@@ -121,7 +122,7 @@ Reglas de contenedor:
 
 Jerarquía cromática:
 
-Una tarjeta de sección admite cuatro superficies. Son las que expone la prop `surface` del componente Section, y no hay más: cualquier otra combinación es un error.
+Una tarjeta de sección admite cuatro superficies. Son las que expone la prop `surface` del componente Section, y no hay más: cualquier otra combinación es un error. Las mismas cuatro superficies son las válidas para una sección a sangre: en ese caso el color ocupa todo el ancho de la ventana en lugar de una tarjeta.
 
 - surface-raised (Mist). Por defecto. Tono muy cercano al fondo de página: el contraste es sutil, no marcado.
 - surface-soft (Eggshell). Alternativa al anterior, un punto más cálida. Sirve para alternar con raised y dar ritmo entre secciones seguidas sin subir la intensidad.

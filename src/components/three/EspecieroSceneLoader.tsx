@@ -1,12 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import {
-  HERO_SCENE_HEIGHT_RATIO,
-  POINTER_AREA_RATIO,
-} from "./heroSceneLayout";
 
 /*
   Punto de entrada de la escena 3D desde el árbol de servidor.
@@ -46,6 +42,37 @@ export default function EspecieroSceneLoader() {
   const [pointerArea, setPointerArea] = useState<HTMLDivElement | null>(null);
 
   /*
+    Borde derecho de la columna de contenido del hero, en px desde el borde
+    izquierdo de la tarjeta. EspecieroScene coloca el envase a CONTENT_GAP_PX
+    de ahí. La escena no se monta hasta tenerlo, para que el primer frame ya
+    salga en su sitio.
+
+    La columna se busca por data-hero-content dentro de la caja que comparte
+    con esta capa (ver Hero.tsx). Se observan las dos con ResizeObserver: la
+    columna cambia de ancho con el breakpoint y cuando carga la fuente del
+    titular, y la tarjeta con la ventana.
+  */
+  const [contentEdgePx, setContentEdgePx] = useState<number | null>(null);
+
+  useEffect(() => {
+    const cardBox = pointerArea?.parentElement?.parentElement;
+    const content = cardBox?.querySelector<HTMLElement>("[data-hero-content]");
+    if (!pointerArea || !content) return;
+
+    const measure = () => {
+      const edge =
+        content.getBoundingClientRect().right -
+        pointerArea.getBoundingClientRect().left;
+      setContentEdgePx(Math.round(edge));
+    };
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(content);
+    observer.observe(pointerArea);
+    return () => observer.disconnect();
+  }, [pointerArea]);
+
+  /*
     Devolver null antes de renderizar la escena evita que se descargue su chunk:
     dynamic() solo pide el módulo cuando el componente se monta. En un teléfono
     no se baja ni un byte de three.js.
@@ -54,46 +81,41 @@ export default function EspecieroSceneLoader() {
 
   return (
     /*
-      Capa de la escena. Va FUERA de la tarjeta del hero, para poder sobresalir
-      por abajo sin desactivar su overflow-hidden, pero dentro de la caja que
-      Hero envuelve alrededor de la tarjeta.
+      Capa de la escena, dentro de la caja que Hero envuelve alrededor de la
+      tarjeta. Esa caja YA es la tarjeta, así que inset-0 basta para alinearse
+      con ella y este archivo no necesita conocer el padding de la sección.
 
-      De ahí que baste con inset-x-0 y top-0: esa caja YA es la tarjeta, así que
-      la capa se alinea sola y este archivo no necesita conocer el padding de la
-      sección. El alto es un porcentaje del de la tarjeta, que es justo como
-      está definido HERO_SCENE_HEIGHT_RATIO.
+      El envase queda contenido en la tarjeta: la capa mide exactamente lo
+      mismo que ella y overflow-hidden con rounded-3xl replica su redondeo en
+      las cuatro esquinas, así que ni el envase girado ni su sombra pueden
+      pintar fuera. El margen entre el envase y los bordes lo calcula
+      EspecieroScene (ver fitHeroFrame).
 
       z-[5] la sitúa por encima del fondo de la tarjeta (que no lleva z-index) y
       por debajo del contenido del hero, que va en z-10.
 
-      pointer-events-none en toda la capa: el sangrado se superpone a lo que
-      sigue en la página y no debe capturar nada. Solo la sub-capa que cubre la
-      tarjeta vuelve a activarlos.
-
-      overflow-hidden con rounded-t-3xl replica el redondeo superior de la
-      tarjeta, para que la escena no pueda pintar fuera de sus esquinas. Abajo
-      queda recto: por ahí es por donde sangra.
+      pointer-events-none en la capa: el canvas no debe interponerse con el
+      contenido. Solo la sub-capa que escucha el puntero vuelve a activarlos.
     */
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 z-[5] overflow-hidden rounded-t-3xl"
-      style={{ height: `${HERO_SCENE_HEIGHT_RATIO * 100}%` }}
+      className="pointer-events-none absolute inset-0 z-[5] overflow-hidden rounded-3xl"
     >
       {/*
-        Área sensible al puntero: cubre exactamente la tarjeta, ni un píxel del
-        sangrado. Está por debajo del canvas en orden de pintado, pero el canvas
-        no captura eventos, así que los recibe igual.
+        Área sensible al puntero: cubre la tarjeta. Está por debajo del canvas
+        en orden de pintado, pero el canvas no captura eventos, así que los
+        recibe igual.
       */}
       <div
         ref={setPointerArea}
-        className="pointer-events-auto absolute inset-x-0 top-0"
-        style={{ height: `${POINTER_AREA_RATIO * 100}%` }}
+        className="pointer-events-auto absolute inset-0"
       />
 
-      {pointerArea && (
+      {pointerArea && contentEdgePx !== null && (
         <EspecieroScene
           motionEnabled={hasFinePointer && !prefersReducedMotion}
           eventSource={pointerArea}
+          contentEdgePx={contentEdgePx}
         />
       )}
     </div>

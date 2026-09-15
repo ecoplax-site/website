@@ -43,18 +43,54 @@ import { headerContent } from "@/content/header";
 const DESKTOP_QUERY = "(min-width: 768px)";
 
 /*
-  Padding propio de la barra, escalado por breakpoint: 22px en móvil, 30px desde
-  sm y 38px desde lg. Deliberadamente menor que el padding interno de la tarjeta
-  del hero (40/56/80px): basta para despegar la barra del borde, sin el aire que
-  sí necesita el bloque de texto. Sigue sin tener relación con aquel: son dos
-  valores independientes y este se puede mover sin tocar el otro.
+  Padding propio de la barra, distinto en cada modo.
+
+  SOBRE EL HERO: 22px en móvil, 30px desde sm y 38px desde lg. Deliberadamente
+  menor que el padding interno de la tarjeta del hero (40/56/80px): basta para
+  despegar la barra del borde, sin el aire que sí necesita el bloque de texto.
+  Sigue sin tener relación con aquel: son dos valores independientes y este se
+  puede mover sin tocar el otro.
 
   Estos 22/30/38 salen de restar 2px por lado a los 24/32/40 que tenía, para
   compensar los 4px que gana la fila (ver BAR_ROW_MIN_HEIGHT) y que la altura
   total de la barra no se mueva. Los dos valores están emparejados: si se cambia
   uno hay que rehacer la cuenta del otro.
+
+  SOBRE EL FONDO DE PÁGINA: 12/16/20px. Aquí la barra tiene superficie propia,
+  así que este padding ya no separa del borde de la tarjeta del hero sino que es
+  el aire interior de la propia barra, y con menos basta. La altura total baja
+  de 84/104/128px a 64/76/92px. La fila no cambia, así que el logotipo mide lo
+  mismo en los dos modos: lo que encoge es el aire, no la marca.
 */
-const HEADER_PADDING = "p-5.5 sm:p-7.5 lg:p-9.5";
+const HEADER_PADDING = {
+  hero: "p-5.5 sm:p-7.5 lg:p-9.5",
+  page: "p-3 sm:p-4 lg:p-5",
+} as const;
+
+/*
+  Superficie de la barra.
+
+  Sobre el hero no lleva ninguna: se superpone a la fotografía y los controles
+  se sostienen solos.
+
+  Fuera de la home lleva surface-muted, que es la que CLAUDE.md reserva para
+  bloques con controles en verde de marca. Es además la que más separa del fondo
+  de página: 1.46:1 contra canvas, frente a 1.06 de raised y 1.14 de soft, que
+  a esa distancia no se leerían como barra. Contrastes medidos sobre ella:
+
+    logotipo ink                6.57:1
+    texto de píldora            8.44:1  (sobre su propio relleno Eggshell)
+    silueta de píldora           1.28:1  (en hover, verde: 6.57:1)
+    CTA y hamburguesa, texto     9.59:1
+    CTA y hamburguesa, silueta   6.57:1
+    anillo de foco               6.57:1
+
+  Radio 24px, el de tarjeta de sección: la barra es una tarjeta más de la página.
+*/
+const HEADER_SURFACE = {
+  hero: "",
+  page: "rounded-3xl bg-surface-muted",
+} as const;
 
 /*
   Margen de la barra respecto al viewport. Es el mismo que separa del borde a
@@ -115,46 +151,42 @@ const BAR_ROW_MIN_HEIGHT = "min-h-10 sm:min-h-11 lg:min-h-13";
 /*
   Píldora de navegación de escritorio.
 
-  REPOSO: relleno verde de marca al 80% de opacidad, borde claro de 1px y texto
-  claro. El relleno no es decorativo, es lo que sostiene el contraste. Sin él la
-  píldora quedaba sobre la fotografía desnuda, y justo ahí la foto es cielo casi
-  blanco: el texto claro medía 1.02:1 y el borde tampoco llegaba al mínimo de
-  3:1. El 80% sale de medir el píxel más claro de la foto bajo la franja y
-  resolver la opacidad mínima que deja el texto por encima de 4.5:1; el umbral
-  cae en 75% y se sube un escalón para tener margen incluso contra blanco puro.
-  Es opacidad, no color sólido, para que la fotografía siga leyéndose detrás.
+  REPOSO: fondo Eggshell (surface-soft) sólido con texto verde de marca (ink),
+  sin borde. El texto mide 8.44:1 sobre el relleno, que es sólido, así que el
+  contraste del texto no depende de lo que haya detrás: ni del video del hero
+  ni del fondo de página.
 
-  HOVER y FOCUS: la píldora se invierte entera —relleno claro, texto y borde
-  verdes—. Se eligió invertir en lugar de subir la opacidad porque el cambio de
-  estado se ve sin lugar a dudas, mientras que pasar de 80% a 100% de verde es
-  un matiz. El borde también se invierte: si se quedara claro, la píldora clara
-  perdería su silueta contra el cielo, que es igual de claro.
+  Capitalización normal, sin uppercase: el texto se muestra tal como está en
+  src/content/footer.ts, con solo la inicial en mayúscula. Sin tracking: el
+  espaciado abierto estaba pensado para mayúsculas, así que queda el de la
+  fuente por defecto.
+
+  HOVER y FOCUS: la píldora se invierte —relleno verde de marca y texto
+  ink-inverse, 9.59:1—. Se mantiene la inversión como señal de estado: con el
+  relleno claro de reposo, cualquier otro tono claro sería un matiz.
 
   El foco añade además el anillo exterior, separado por outline-offset para que
-  se lea como anillo y no como borde: eso es lo que lo distingue del hover. Va
-  en verde, no en claro, porque el hueco del offset deja ver el cielo.
-
-  Contrastes medidos sobre la fotografía real (ver reporte), no sobre el color
-  de respaldo:
-    - reposo:      texto y borde claros sobre el relleno al 80%
-    - hover/focus: verde sobre relleno claro
-    - anillo:      verde contra el cielo del hueco del offset
+  se lea como anillo y no como relleno: eso es lo que lo distingue del hover.
 
   motion-safe en la transición: con prefers-reduced-motion el cambio de color
   es instantáneo, sin recorrido.
 */
 const NAV_PILL_BASE =
-  "inline-flex items-center rounded-full border bg-surface-strong/80 px-4 py-2 font-body text-xs font-semibold tracking-widest whitespace-nowrap uppercase text-ink-inverse motion-safe:transition-colors hover:border-ink hover:bg-ink-inverse hover:text-ink focus-visible:border-ink focus-visible:bg-ink-inverse focus-visible:text-ink";
+  "inline-flex items-center rounded-full bg-surface-soft px-4 py-2 font-body text-xs font-semibold whitespace-nowrap text-ink motion-safe:transition-colors hover:bg-surface-strong hover:text-ink-inverse focus-visible:bg-surface-strong focus-visible:text-ink-inverse";
 
 /*
-  Sobre el fondo de página el relleno al 80% sigue sirviendo: da 5.48:1 al texto
-  y 5.48:1 de silueta contra canvas. Lo que sobra es el borde claro, que existe
-  para recortar la píldora contra el cielo de la fotografía y contra canvas mide
-  1.0:1 —se vería como un filo blanco sin función—. Se apaga.
+  Sobre el hero, el hueco del outline-offset cae sobre el video, cuyo píxel no
+  es un valor conocido: anillo de dos tonos (focus-ring-photo). Fuera de la home
+  cae sobre la barra en surface-muted y basta el anillo ink de la capa base
+  (6.57:1).
+
+  Silueta de la píldora en reposo: 1.28:1 contra la barra surface-muted de las
+  páginas interiores y 1.18:1 contra blanco puro en el video del hero. En hover
+  pasa a verde: 6.57:1 contra la barra y 9.93:1 contra blanco.
 */
 const NAV_PILL_STYLES = {
-  hero: `${NAV_PILL_BASE} border-ink-inverse focus-ring-photo`,
-  page: `${NAV_PILL_BASE} border-transparent`,
+  hero: `${NAV_PILL_BASE} focus-ring-photo`,
+  page: NAV_PILL_BASE,
 } as const;
 
 /*
@@ -264,7 +296,9 @@ export default function Header() {
         necesitan lo reactivan. Es el mismo patrón que usan los otros bloques
         del hero.
       */}
-      <header className={`pointer-events-none ${HEADER_PADDING}`}>
+      <header
+        className={`pointer-events-none ${HEADER_PADDING[mode]} ${HEADER_SURFACE[mode]}`}
+      >
         {/*
           items-center es lo que mantiene alineados logotipo, enlaces y botón en
           el eje vertical: los centra a todos sobre el mismo eje independientemente

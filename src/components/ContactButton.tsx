@@ -16,11 +16,11 @@ const VARIANT_STYLES = {
     pointer-events-auto: el contenedor del bloque de texto los desactiva para
     no congelar el giro del envase, así que el botón los recupera.
   */
-  hero: "pointer-events-auto bg-surface-strong px-6 py-3 text-ink-inverse focus-visible:outline-ink-inverse",
+  hero: "pointer-events-auto rounded-xl bg-surface-strong px-6 py-3 text-ink-inverse focus-visible:outline-ink-inverse",
   /*
     Botón del header, sobre la tarjeta del hero. Verde de marca sólido, sin
     transparencia: es la acción principal y tiene que pesar más que las
-    píldoras de navegación, que llevan el mismo verde al 80%.
+    píldoras de navegación, que van en Eggshell con texto verde.
 
     Antes era surface-raised. Se cambió porque ese relleno claro medía 1.01:1
     contra el cielo de la fotografía: el botón no se distinguía como forma.
@@ -29,8 +29,12 @@ const VARIANT_STYLES = {
     focus-ring-photo: el hueco que deja outline-offset enseña la foto, cuyo
     píxel no es un valor conocido, así que el anillo va en dos tonos —ink más
     halo canvas— y no depende de lo que haya debajo.
+
+    Radio completo, el mismo que las píldoras de navegación que tiene al lado.
+    Las demás variantes mantienen el radio de control, 12px.
   */
-  header: "bg-surface-strong px-5 py-2 text-ink-inverse focus-ring-photo",
+  header:
+    "rounded-full bg-surface-strong px-5 py-2 text-ink-inverse focus-ring-photo",
   /*
     El mismo botón del header cuando la barra NO va sobre fotografía, es decir
     fuera de la home. Idéntico en todo salvo el anillo de foco: aquí el hueco
@@ -38,7 +42,7 @@ const VARIANT_STYLES = {
     claro, así que basta el anillo ink de la capa base. El halo de
     focus-ring-photo sería invisible sobre canvas y no pinta nada.
   */
-  headerPlain: "bg-surface-strong px-5 py-2 text-ink-inverse",
+  headerPlain: "rounded-full bg-surface-strong px-5 py-2 text-ink-inverse",
   /*
     CTA del footer, sobre la fotografía de fondo. Mismo par de tokens que el
     del hero —ink-inverse sobre surface-strong, 9.6:1— porque es el que da
@@ -48,7 +52,7 @@ const VARIANT_STYLES = {
     tonos, por la misma razón que el del header: el hueco del outline-offset
     cae sobre la foto, no sobre el relleno del botón.
   */
-  footer: "bg-surface-strong px-6 py-3 text-ink-inverse focus-ring-photo",
+  footer: "rounded-xl bg-surface-strong px-6 py-3 text-ink-inverse focus-ring-photo",
   /*
     Botón dentro del panel de navegación de móvil (Header.tsx). Mismo par de
     tokens que el del hero —ink-inverse sobre surface-strong, 9.6:1—, a todo el
@@ -59,7 +63,7 @@ const VARIANT_STYLES = {
     sobre mist mide 1.06:1 y no se vería. Es también la única que no necesita
     focus-ring-photo, porque no se apoya sobre fotografía.
   */
-  menu: "w-full bg-surface-strong px-6 py-3 text-ink-inverse",
+  menu: "w-full rounded-xl bg-surface-strong px-6 py-3 text-ink-inverse",
 } as const;
 
 type ContactButtonProps = {
@@ -87,7 +91,7 @@ export default function ContactButton({
         onClick?.();
         openContactModal();
       }}
-      className={`appearance-none rounded-xl font-body text-sm font-medium ${VARIANT_STYLES[variant]}`}
+      className={`appearance-none font-body text-sm font-medium ${VARIANT_STYLES[variant]}`}
     >
       {label}
     </button>

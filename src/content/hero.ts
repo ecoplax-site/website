@@ -8,13 +8,9 @@ export type HeroContent = {
   /**
    * Titular principal — es el único <h1> de la página.
    *
-   * Una entrada por línea: el salto entre ellas se fuerza en escritorio (desde
-   * xl, que es donde la primera línea cabe entera sin reducir el cuerpo de la
-   * letra). Por debajo de ese ancho las líneas se unen con un espacio y el
-   * texto fluye solo en las que hagan falta.
-   *
-   * Para cambiar dónde corta el titular, mueve las palabras entre las dos
-   * líneas de la lista. No hace falta tocar el componente.
+   * Las entradas se muestran seguidas, unidas por un espacio, y el texto se
+   * parte solo según el ancho de la pantalla: dividirlo en varias entradas no
+   * fuerza ningún salto de línea.
    */
   headlineLines: string[];
   subtitle: string;

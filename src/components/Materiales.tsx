@@ -21,7 +21,7 @@ import { materialesContent } from "@/content/materiales";
  * componente Section. Su contenido va directamente sobre el fondo de página
  * (surface-base), sin fondo propio, sin radio y sin margen lateral de tarjeta.
  * Conserva el ritmo vertical de Section —mt-6/sm:mt-10 más py-12/sm:py-16— para
- * que la separación con Origen y con el footer no cambie, y reutiliza su escala
+ * que la separación con la sección anterior y con el footer no cambie, y reutiliza su escala
  * tipográfica. El <h2> es propio, dentro del encabezado del carrusel.
  */
 
@@ -147,7 +147,7 @@ export default function Materiales() {
   /*
     Sin tarjeta: ni fondo, ni radio, ni margen lateral. Se conserva el ritmo
     vertical que ponía Section —el mt- de separación entre secciones y el py- de
-    la tarjeta— para que el hueco con Origen y con el footer no se mueva.
+    la tarjeta— para que el hueco con la sección anterior y con el footer no se mueva.
   */
   return (
     <section id="materiales" className="mt-6 py-12 sm:mt-10 sm:py-16">

@@ -6,7 +6,7 @@
    * PP Mori (tipografía oficial) no tiene licencia web adquirida; estos son
    * los sustitutos aprobados de Google Fonts, cargados con next/font en layout.tsx.
    */
-  --font-heading: var(--font-dm-sans); /* Titulares → DM Sans. Utilidad: font-heading */
+  --font-heading: var(--font-manrope); /* Titulares → Manrope. Utilidad: font-heading */
   --font-body: var(--font-figtree); /* Texto corrido → Figtree. Utilidad: font-body */
 }
 
@@ -190,6 +190,78 @@
 }
 
 /*
+ * Utilidad — fila de Valores con hover que aparta a las vecinas
+ * (src/components/Valores.tsx).
+ *
+ * Se aplica a la <ul> de la fila de cuatro. La tarjeta bajo el puntero escala;
+ * las de su izquierda se desplazan a la izquierda y las de su derecha a la
+ * derecha, lo mismo que crece la activa por cada costado, así que el hueco
+ * entre tarjetas es el mismo que en reposo. Las vecinas solo se mueven. Todo
+ * con scale y translate, que no ocupan sitio en el flujo: la fila no cambia de
+ * alto ni empuja nada.
+ *
+ * Es una utilidad y no clases en el componente porque Tailwind no tiene variante
+ * para "hermana anterior a la que tiene hover" sin valores arbitrarios, y
+ * porque el desplazamiento depende del ancho de la tarjeta.
+ *
+ * MEDIDAS
+ *
+ *   ancho de tarjeta  w = (fila − 3 × gap-8) / 4       (100cqi: la fila es contenedor)
+ *   escala            s = 1.05
+ *   crecimiento       d = (s − 1) × w / 2               por cada costado
+ *
+ * Las tarjetas de los extremos se desplazan d hacia fuera de la fila (y si la
+ * activa es una de ellas, es ella la que crece d hacia fuera). Ese espacio sale
+ * del medianil de la sección (px-16 de sm en adelante, 4rem, entre la fila y el
+ * borde de la ventana). Se limita a 2.5rem, de modo que una tarjeta desplazada
+ * queda siempre a 1.5rem o más del borde, el mismo margen que las secciones con
+ * tarjeta. Así ninguna toca el borde y no hay scroll horizontal.
+ *
+ * Con s = 1.05, d alcanza 2.5rem cuando la tarjeta mide 100rem, es decir, con
+ * una fila de 406rem (unos 6500px). A 1440px d mide unos 8px. Por encima de ese
+ * ancho la escala se reduce a 1 —sin escalado ni desplazamiento— en vez de
+ * desbordar. No se ajusta la escala de forma continua porque haría falta
+ * dividir una longitud entre otra, y calc() todavía no lo admite en todos los
+ * navegadores.
+ *
+ * La transición —500ms, ease-out— la ponen las tarjetas en Valores.tsx, así que
+ * todas se mueven a la vez y al mismo ritmo. Esta utilidad debe aplicarse con
+ * motion-safe: sin ella no hay escalado ni desplazamiento.
+ *
+ * Si cambian gap-8 o el medianil de Valores, cambian aquí.
+ */
+@utility valores-row {
+  container-type: inline-size;
+
+  & > li {
+    --valores-card-width: calc((100cqi - 3 * var(--spacing) * 8) / 4);
+    --valores-scale: 1.05;
+    --valores-shift: calc((var(--valores-scale) - 1) / 2 * var(--valores-card-width));
+  }
+
+  @container (width > 406rem) {
+    & > li {
+      --valores-scale: 1;
+    }
+  }
+
+  @media (hover: hover) {
+    & > li:hover {
+      z-index: 10;
+      scale: var(--valores-scale);
+    }
+
+    & > li:has(~ li:hover) {
+      translate: calc(-1 * var(--valores-shift)) 0;
+    }
+
+    & > li:hover ~ li {
+      translate: var(--valores-shift) 0;
+    }
+  }
+}
+
+/*
  * Capa base — interlineado de los titulares.
  *
  * Declaración única para todo el sitio. Antes cada titular llevaba su propio
@@ -208,7 +280,7 @@
  *
  * Se engancha a font-heading y no a h1/h2/h3 a propósito: lo que define un
  * titular aquí es la tipografía de titulares, no la etiqueta. Así lo hereda
- * también algún bloque que va con DM Sans sin ser encabezado, y no lo hereda un
+ * también algún bloque que va con Manrope sin ser encabezado, y no lo hereda un
  * <h3> que un día se componga con la tipografía de texto.
  *
  * Se escribe en --tw-leading y no en line-height directamente. Las utilidades

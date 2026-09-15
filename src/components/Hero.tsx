@@ -1,6 +1,6 @@
-import { Fragment } from "react";
 import Image from "next/image";
 import ContactButton from "@/components/ContactButton";
+import HeroBackgroundVideo from "@/components/HeroBackgroundVideo";
 import EspecieroSceneLoader from "@/components/three/EspecieroSceneLoader";
 import { heroContent } from "@/content/hero";
 
@@ -32,15 +32,21 @@ export default function Hero() {
       <div className="relative h-full">
         <div className="relative flex h-full flex-col overflow-hidden rounded-3xl bg-surface-strong p-10 text-ink-inverse sm:p-14 lg:p-20">
           {/*
-            Fondo de la tarjeta. Decorativa: alt vacío.
+            Fondo de la tarjeta: fotografía y video encima. Decorativos: alt
+            vacío y aria-hidden. No llevan capa de color ni filtro encima.
 
             El verde de marca sigue en el contenedor (bg-surface-strong) como
             color de respaldo: es lo que se ve mientras la imagen carga y si
-            fallara. No lleva overlay ni filtro encima.
+            fallara.
 
-            Orden de apilado dentro del hero: esta capa en z-0, la escena 3D del
-            envase en z-[5] y el contenido en z-10. El recorte a las esquinas lo
-            da el overflow-hidden con rounded-3xl del propio contenedor.
+            La fotografía hace de póster del video: se ve mientras el video no
+            reproduce y en su lugar con prefers-reduced-motion (ver
+            HeroBackgroundVideo).
+
+            Orden de apilado dentro del hero: fotografía y video en z-0, por
+            orden de aparición; la escena 3D del envase en z-[5] y el contenido
+            en z-10. El recorte a las esquinas lo da el
+            overflow-hidden con rounded-3xl del propio contenedor.
 
             priority: está sobre el pliegue y es el LCP probable del hero.
           */}
@@ -52,6 +58,7 @@ export default function Hero() {
             sizes="100vw"
             className="z-0 object-cover object-center"
           />
+          <HeroBackgroundVideo />
 
           {/*
             pointer-events-none en los contenedores: son cajas que abarcan todo el
@@ -61,32 +68,39 @@ export default function Hero() {
           */}
           <div className="pointer-events-none relative z-10 flex flex-1 items-center">
             {/*
-              Hasta lg la columna ocupa media tarjeta. Desde xl su ancho lo marca
-              el contenido: así la primera línea del titular cabe entera sea cual
-              sea su medida real, sin depender de una fracción calculada a ojo ni
-              de reducir el cuerpo de la letra.
+              Desde lg la columna declara su ancho: el 60% del interior de la
+              tarjeta (w-3/5), y el titular se acomoda dentro. Por debajo de
+              lg no lleva ancho y ocupa el disponible.
+
+              data-hero-content marca la columna para EspecieroSceneLoader, que
+              mide dónde termina y coloca el envase a CONTENT_GAP_PX de ese
+              borde (ver EspecieroScene). La separación no sale del ancho de la
+              columna: si la columna cambia, el envase la sigue.
             */}
-            <div className="flex flex-col items-start gap-6 lg:w-1/2 xl:w-auto">
+            <div
+              data-hero-content
+              className="flex flex-col items-start gap-6 lg:w-3/5"
+            >
               <p className="pointer-events-auto font-body text-xs font-semibold tracking-widest uppercase">
                 {heroContent.eyebrow}
               </p>
               {/*
-                El salto entre líneas sale del contenido, no del JSX: aquí solo se
-                intercala un <br> entre una entrada y la siguiente. Se oculta por
-                debajo de xl —donde la primera línea no cabe— y entonces las
-                líneas se leen seguidas, separadas por el espacio que va tras cada
-                una, y el texto se ajusta solo.
+                Sin saltos forzados: las entradas de headlineLines se unen con
+                un espacio y el texto se parte solo dentro del ancho de la
+                columna. text-balance reparte las palabras para que las líneas
+                midan parecido, sin cambiar cuántas hay.
               */}
-              <h1 className="pointer-events-auto font-heading text-4xl font-semibold sm:text-5xl lg:text-6xl">
-                {heroContent.headlineLines.map((line, index) => (
-                  <Fragment key={line}>
-                    {index > 0 && <br className="hidden xl:inline" />}
-                    {line}
-                    {index < heroContent.headlineLines.length - 1 ? " " : null}
-                  </Fragment>
-                ))}
+              <h1 className="pointer-events-auto font-heading text-4xl font-semibold text-balance sm:text-5xl lg:text-6xl">
+                {heroContent.headlineLines.join(" ")}
               </h1>
-              <p className="pointer-events-auto max-w-md font-body text-base sm:text-lg">
+              {/*
+                El párrafo ocupa el mismo ancho que el titular, pero no lo marca:
+                contain-inline-size lo saca del cálculo del ancho de la columna
+                —por debajo de lg, donde la columna no declara ancho, la frase
+                en una sola línea podría ensancharla— y self-stretch lo estira
+                hasta el ancho de la columna.
+              */}
+              <p className="pointer-events-auto self-stretch font-body text-base contain-inline-size sm:text-lg">
                 {heroContent.subtitle}
               </p>
 
@@ -113,10 +127,11 @@ export default function Hero() {
         </div>
 
         {/*
-          Capa de fondo: el envase en 3D, en la mitad derecha. Va fuera de la
-          tarjeta, no dentro, para poder sangrar por su borde inferior sin tocar
-          el overflow-hidden de la tarjeta. Se coloca por encima del fondo de la
-          tarjeta y por debajo de su contenido (z-10). Es decorativa.
+          Capa de fondo: el envase en 3D, en la mitad derecha, contenido dentro
+          de la tarjeta. Es hermana de la tarjeta y no hija: se alinea con ella
+          a través de esta caja y recorta sus propias esquinas. Se coloca por
+          encima del fondo de la tarjeta y por debajo de su contenido (z-10).
+          Es decorativa.
         */}
         <EspecieroSceneLoader />
       </div>

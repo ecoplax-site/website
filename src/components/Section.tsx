@@ -8,7 +8,8 @@ import type { ReactNode } from "react";
  *  - Margen lateral respecto al viewport: la tarjeta nunca toca el borde.
  *  - Radio de esquina de 24px (rounded-3xl).
  *  - Separación vertical uniforme respecto a la sección anterior (mt),
- *    por espacio, no por líneas divisorias.
+ *    por espacio, no por líneas divisorias. La única variante es la de la
+ *    sección que sigue al hero (ver marginStyles).
  *  - Superficie de la tarjeta y color de texto legible sobre ella.
  *
  * Las tarjetas hijas que se pasen como children llevan radio de 16px
@@ -100,6 +101,25 @@ const paddingStyles = {
 
 type SectionPadding = keyof typeof paddingStyles;
 
+/*
+  Separación respecto a lo que hay encima.
+
+  Por defecto, mt-6/sm:mt-10: el hueco entre dos secciones.
+
+  "afterHero" es para la sección que va justo debajo de la tarjeta del hero. La
+  <section> del hero ya deja por debajo su propio margen de viewport
+  (py-4/sm:py-6, el mismo que el lateral), así que aquí se suma otro igual:
+  mt-4/sm:mt-6. El hueco total entre las dos tarjetas es el doble del margen
+  lateral de la del hero: 32px en móvil y 48px de sm en adelante. Si cambia el
+  margen de Hero.tsx, cambia aquí.
+*/
+const marginStyles = {
+  default: "mt-6 sm:mt-10",
+  afterHero: "mt-4 sm:mt-6",
+} as const;
+
+type SectionMargin = keyof typeof marginStyles;
+
 type SectionProps = {
   /** Ancla de navegación (#id). Opcional. */
   id?: string;
@@ -119,6 +139,11 @@ type SectionProps = {
    * lateral; "even" lo iguala a él. Ver paddingStyles.
    */
   padding?: SectionPadding;
+  /**
+   * Separación superior. "afterHero" solo para la sección que sigue al hero.
+   * Ver marginStyles.
+   */
+  margin?: SectionMargin;
   /** Retícula de la sección: tarjetas hijas, bloques de imagen, etc. */
   children?: ReactNode;
 };
@@ -129,12 +154,13 @@ export default function Section({
   intro,
   surface = "raised",
   padding = "default",
+  margin = "default",
   children,
 }: SectionProps) {
   const styles = surfaceStyles[surface];
 
   return (
-    <section id={id} className="mt-6 px-4 sm:mt-10 sm:px-6">
+    <section id={id} className={`px-4 sm:px-6 ${marginStyles[margin]}`}>
       <div
         className={`rounded-3xl px-6 sm:px-10 ${paddingStyles[padding]} ${styles.card}`}
       >

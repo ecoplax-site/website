@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Figtree } from "next/font/google";
+import { Figtree, Manrope } from "next/font/google";
 import ContactModalProvider from "@/components/ContactModal";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -9,9 +9,16 @@ import { MAIN_CONTENT_ID } from "@/lib/mainContent";
 import "./globals.css";
 
 // Sustitutos de PP Mori (tipografía de marca sin licencia web) — ver CLAUDE.md > "Identidad de marca".
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+
+/*
+  Titulares. Manrope es variable, pero se carga solo el peso que usa el sitio:
+  todos los titulares van en font-semibold (600). Si algún titular pasa a otro
+  peso, hay que añadirlo aquí; si no, el navegador lo sintetiza.
+*/
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
+  weight: "600",
 });
 
 const figtree = Figtree({
@@ -28,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es-MX"
-      className={`${dmSans.variable} ${figtree.variable} h-full antialiased`}
+      className={`${manrope.variable} ${figtree.variable} h-full antialiased`}
     >
       {/*
         relative: la barra superior se posiciona en absoluto contra el <body>
