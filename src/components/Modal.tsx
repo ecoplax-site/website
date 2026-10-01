@@ -37,8 +37,22 @@ const FOCUSABLE_SELECTOR = [
   "input:not([disabled])",
   "select:not([disabled])",
   "textarea:not([disabled])",
+  /*
+    Un <video> con controles nativos recibe foco y se maneja con teclado. Sin
+    él en la lista, la trampa de Tab lo saltaría y sus controles quedarían
+    fuera de alcance.
+  */
+  "video[controls]",
   '[tabindex]:not([tabindex="-1"])',
 ].join(",");
+
+const SIZE_STYLES = {
+  default: "max-w-lg",
+  /* Contenido a dos columnas. */
+  wide: "max-w-4xl",
+  /* Video 16:9. El ancho real lo limita el propio video (ver VideoModal). */
+  video: "max-w-6xl",
+} as const;
 
 type ModalProps = {
   open: boolean;
@@ -64,8 +78,8 @@ type ModalProps = {
    * panel, que suele ser el botón de cerrar.
    */
   initialFocusRef?: RefObject<HTMLElement | null>;
-  /** Ancho máximo del panel. "wide" es para contenido a dos columnas. */
-  size?: "default" | "wide";
+  /** Ancho máximo del panel. Ver SIZE_STYLES. */
+  size?: keyof typeof SIZE_STYLES;
   /**
    * false quita el padding del panel: lo necesita el contenido que llega hasta
    * el borde, como una columna de imagen a sangre.
@@ -256,7 +270,7 @@ function ModalPanel({
         aria-modal="true"
         aria-labelledby={titleId}
         className={`relative max-h-full w-full overflow-y-auto rounded-3xl bg-surface-raised ${
-          size === "wide" ? "max-w-4xl" : "max-w-lg"
+          SIZE_STYLES[size]
         } ${padded ? "p-6 sm:p-8" : ""} ${motionClasses}`}
       >
         {title ? (

@@ -16,6 +16,26 @@ export type Pilar = {
   cards: string[];
 };
 
+export type PilaresVideo = {
+  /** Nombre accesible del botón de play del cuadro central. */
+  playLabel: string;
+  /** Título del modal del video. Se muestra en su cabecera. */
+  dialogTitle: string;
+  /** Texto accesible del botón de cerrar del modal. */
+  closeLabel: string;
+  /**
+   * Subtítulos en español del video institucional.
+   *
+   * Para activarlos, sube el archivo .vtt a public/videos y escribe su ruta
+   * entre comillas en lugar de null, por ejemplo:
+   *   captionsSrc: "/videos/institucional.es.vtt",
+   * Mientras sea null, el reproductor no lleva pista de subtítulos.
+   */
+  captionsSrc: string | null;
+  /** Nombre de la pista en el menú de subtítulos del reproductor. */
+  captionsLabel: string;
+};
+
 export type PilaresContent = {
   /** Etiqueta pequeña sobre el titular. */
   eyebrow: string;
@@ -27,6 +47,8 @@ export type PilaresContent = {
   selectorLabel: string;
   /** Pilares. El primero de la lista es el que aparece activo al cargar. */
   pillars: Pilar[];
+  /** Botón de play y modal del video institucional, en el cuadro central. */
+  video: PilaresVideo;
 };
 
 export const pilaresContent: PilaresContent = {
@@ -62,4 +84,13 @@ export const pilaresContent: PilaresContent = {
       ],
     },
   ],
+  video: {
+    playLabel: "Reproducir video institucional",
+    // PENDIENTE confirmar con SCNDAL: título provisional.
+    dialogTitle: "Video institucional",
+    closeLabel: "Cerrar",
+    // PENDIENTE archivo de subtítulos en español (.vtt).
+    captionsSrc: null,
+    captionsLabel: "Español",
+  },
 };

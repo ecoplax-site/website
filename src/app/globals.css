@@ -204,6 +204,24 @@
   padding: 10%;
 }
 
+/*
+ * Utilidad — ancho del video en el modal del video institucional
+ * (src/components/VideoModal.tsx).
+ *
+ * El video tiene que verse entero a 16:9 tanto si manda el ancho de la ventana
+ * como si manda el alto (escritorio bajo, móvil en horizontal). Se toma el
+ * menor de dos anchos: el disponible y el que corresponde al alto disponible.
+ *
+ * 11rem es lo que ocupa todo lo que no es video en vertical, a partir de sm:
+ * padding del velo (2 × 1.5rem), padding del panel (2 × 2rem) y cabecera del
+ * modal (botón de cerrar de 2.5rem más 1.5rem de margen). Por debajo de sm los
+ * paddings son menores y sobra 2rem, que se deja como margen. Si cambian esos
+ * paddings o la cabecera del Modal, hay que recalcular este valor.
+ */
+@utility video-modal-frame {
+  width: min(100%, calc((100dvh - 11rem) * 16 / 9));
+}
+
 
 /*
  * Utilidad — fila de Valores con hover que aparta a las vecinas

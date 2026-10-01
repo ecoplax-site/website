@@ -1,7 +1,16 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
+import PilaresLoopVideo from "@/components/PilaresLoopVideo";
 import Section, { sectionTypography } from "@/components/Section";
+import VideoModal from "@/components/VideoModal";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { pilaresContent } from "@/content/pilares";
 
@@ -30,6 +39,23 @@ const ACTIVE_TAB_STYLES = "bg-surface-strong font-semibold text-ink-inverse";
 /* Sobre surface-soft, ink mide 8.5:1. */
 const INACTIVE_TAB_STYLES = "bg-surface-soft font-medium text-ink";
 
+/*
+  Botón de play sobre el loop del cuadro central. Circular, 64px.
+
+  Vidrio verde de marca: surface-strong al 80% con desenfoque, y el triángulo
+  en ink-inverse. Glass válido porque va sobre video. El contraste del icono no
+  depende del frame: el peor fondo posible es blanco puro, y verde al 80% sobre
+  blanco compone #4f6f56, contra el que ink-inverse mide 5.42:1 (lo exigido a un
+  gráfico es 3:1). Sobre negro, 11.78:1. El borde ink-inverse/40, el del vidrio
+  del footer, despega el círculo cuando detrás hay verde oscuro.
+
+  Hover y foco: verde sólido, ink-inverse a 9.6:1. Solo cambia el color, con
+  transición bajo motion-safe; el desenfoque no se anima. focus-ring-photo
+  porque el hueco del outline-offset cae sobre el video.
+*/
+const PLAY_BUTTON_STYLES =
+  "absolute top-1/2 left-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-ink-inverse/40 bg-surface-strong/80 text-ink-inverse backdrop-blur-md motion-safe:transition-colors hover:bg-surface-strong focus-visible:bg-surface-strong focus-ring-photo";
+
 export default function Pilares() {
   const { pillars } = pilaresContent;
   const baseId = useId();
@@ -42,6 +68,10 @@ export default function Pilares() {
   const activePillar = pillars[activeIndex];
 
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  // Modal del video institucional. Mientras está abierto, el loop se pausa.
+  const [videoOpen, setVideoOpen] = useState(false);
+  const closeVideo = useCallback(() => setVideoOpen(false), []);
 
   /*
     Navegación de la lista de pestañas. Arriba y abajo recorren en ciclo, Home y
@@ -186,23 +216,23 @@ export default function Pilares() {
           </div>
 
           {/*
-          Panel de imagen.
+          Panel de imagen: loop del video institucional (ver PilaresLoopVideo).
+          Es el mismo para los tres pilares; no cambia con la pestaña activa.
 
           YA NO TIENE PROPORCIÓN ESTABLE EN ESCRITORIO. Por debajo de lg sigue
           en 3:4, pero de lg en adelante se estira al alto de la fila, que lo
           marca la columna de texto: es lo que hace que su base coincida con la
           del selector. Su proporción pasa a depender del ancho de la ventana.
 
-          AL RECIBIR LA FOTOGRAFÍA hay que revisar el encuadre en todo el rango,
-          no en una captura: la celda va de proporción alta y estrecha en
-          pantallas medias a casi cuadrada en las anchas, y un encuadre que
-          funcione a 1440 puede dejar el motivo fuera a 1024 o a 1920. Debe ir
-          con object-cover para que la foto no se deforme al estirarse:
+          El loop está exportado en 3:4 y va con object-cover, así que en
+          escritorio se recorta: por los lados en pantallas medias, donde la
+          celda es más estrecha, y por arriba y abajo en las anchas, donde es
+          casi cuadrada. El encuadre hay que revisarlo en todo el rango, no en
+          una captura.
 
-            <Image src={...} alt={...} fill className="object-cover" />
-
-          El radio de tarjeta hija (16px) y el relative para el <Image fill> ya
-          los pone este contenedor.
+          El radio de tarjeta hija (16px), el overflow-hidden y el relative para
+          el póster con fill los pone este contenedor. El fondo surface-soft
+          queda como respaldo mientras carga el póster.
 
           lg:row-start-1 hace falta para deshacer el md:row-start-2: las
           variantes de Tailwind son mínimos, no tramos, así que el de md sigue
@@ -214,6 +244,29 @@ export default function Pilares() {
               aria-hidden="true"
               className="absolute inset-0 bg-surface-soft"
             />
+            <PilaresLoopVideo paused={videoOpen} />
+
+            {/*
+              Abre el modal con el video completo. Al cerrarlo, Modal devuelve
+              el foco aquí.
+            */}
+            <button
+              type="button"
+              onClick={() => setVideoOpen(true)}
+              aria-label={pilaresContent.video.playLabel}
+              aria-haspopup="dialog"
+              className={PLAY_BUTTON_STYLES}
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                /* translate-x-0.5: centrado óptico del triángulo. */
+                className="h-6 w-6 translate-x-0.5"
+              >
+                <path d="M7 4.5v15a1 1 0 0 0 1.52.85l12-7.5a1 1 0 0 0 0-1.7l-12-7.5A1 1 0 0 0 7 4.5z" />
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -233,6 +286,9 @@ export default function Pilares() {
           <PillarCards key={activePillar.id} cards={activePillar.cards} />
         </div>
       </div>
+
+      {/* Se pinta con un portal en <body>: el cuadro tiene overflow-hidden. */}
+      <VideoModal open={videoOpen} onClose={closeVideo} />
     </Section>
   );
 }
