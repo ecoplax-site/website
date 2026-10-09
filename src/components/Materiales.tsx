@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import CarouselControls from "@/components/CarouselControls";
 import { sectionTypography } from "@/components/Section";
 import {
@@ -53,6 +55,21 @@ const CARDS_PER_VIEW = { base: 2, md: 3, lg: 4 } as const;
 */
 const CARD_WIDTH =
   "w-[calc((100%_-_1rem)/2)] md:w-[calc((100%_-_2rem)/3)] lg:w-[calc((100%_-_3rem)/4)]";
+
+/*
+  Dimensiones intrínsecas de las fotos de public/images/materiales/: todas son
+  cuadradas de 1080 × 1080 px. Si llega una foto con otra medida, este valor
+  deja de ser cierto para ella.
+*/
+const MATERIAL_IMAGE_SIZE = 1080;
+
+/*
+  Ancho pintado de cada tarjeta según CARDS_PER_VIEW, para que el navegador pida
+  la variante justa: 1/2 de la ventana en móvil, 1/3 en tablet y 1/4 en
+  escritorio. Es una cota por arriba: el medianil y los huecos la reducen algo.
+*/
+const MATERIAL_IMAGE_SIZES =
+  "(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw";
 
 /*
   Medianil de contenido. Al desaparecer la tarjeta de sección, este es el que
@@ -246,22 +263,23 @@ export default function Materiales() {
                   className={`flex shrink-0 snap-start flex-col items-center gap-4 text-center ${CARD_WIDTH}`}
                 >
                   {/*
-                El contenedor ya fija la proporción 1:1 y el radio de tarjeta
-                hija (16px), y es relative para admitir <Image fill>. Sustituir
-                el div interior por el <Image> no cambia el layout.
+                El contenedor fija la proporción 1:1 y el radio de tarjeta hija
+                (16px). Las fotos son cuadradas, de la misma proporción, así
+                que object-cover no recorta nada: solo protege la caja si un
+                día llega una foto con otra medida.
 
-                surface-muted, no surface-raised: contra el fondo de página
-                (surface-base) mist mide 1.06:1 y la caja desaparecía; pastel-gray
-                mide 1.46:1, el máximo que da un token de superficie clara de la
-                paleta, y es el único que deja ver la forma.
-
-                PENDIENTE fotografía del material.
-                Al recibirla: <Image src={...} alt={...} fill className="object-cover" />
+                width y height son las dimensiones intrínsecas del archivo:
+                reservan el hueco antes de que cargue la foto. El tamaño
+                pintado lo pone size-full.
               */}
                   <div className="relative aspect-square w-full overflow-hidden rounded-2xl">
-                    <div
-                      aria-hidden="true"
-                      className="absolute inset-0 bg-surface-muted"
+                    <Image
+                      src={material.imagen}
+                      alt={material.imagenAlt}
+                      width={MATERIAL_IMAGE_SIZE}
+                      height={MATERIAL_IMAGE_SIZE}
+                      sizes={MATERIAL_IMAGE_SIZES}
+                      className="size-full object-cover"
                     />
                   </div>
 
